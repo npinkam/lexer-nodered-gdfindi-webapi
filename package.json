@@ -8,6 +8,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "tableify": "*"
   },
 "node-red" : {
     "nodes": {

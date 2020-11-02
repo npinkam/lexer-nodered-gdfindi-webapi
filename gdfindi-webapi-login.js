@@ -2,7 +2,6 @@ module.exports = function (RED) {
     function gdfindiWebapiLoginNode(config) {
         RED.nodes.createNode(this, config);
         var node = this;
-
         //properties field
         var username = this.credentials.username;
         var password = this.credentials.password;
