@@ -1,0 +1,28 @@
+<script type="text/javascript">
+    RED.nodes.registerType('gdfindi-webapi-login', {
+        category: 'lexer-function',
+        color: '#a6bbcf',
+        defaults: {
+        },
+        credentials: {
+            username: { type: "text" },
+            password: { type: "password" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "file.png",
+        label: function () {
+            return "Login";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="gdfindi-webapi-login">
+    <div class="form-row">        <label for="node-input-username">Username</label><input type="text" id="node-input-username"></br>
+            <label for="node-input-password">Password</label><input type="password" id="node-input-password"></br>
+        </div>
+</script>
+
+<script type="text/html" data-help-name="gdfindi-webapi-login">
+    <p>gdfindi-webapi-login</p>
+</script>

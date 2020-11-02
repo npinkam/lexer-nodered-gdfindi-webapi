@@ -1,0 +1,18 @@
+{
+  "name": "lexer-nodered-gdfindi-webapi",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+  },
+"node-red" : {
+    "nodes": {
+        "gdfindi-webapi-login": "gdfindi-webapi-login.js",
+        "gdfindi-webapi-project-list": "gdfindi-webapi-project-list.js"
+    }
+}
+}
