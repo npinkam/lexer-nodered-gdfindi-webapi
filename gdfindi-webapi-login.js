@@ -1,3 +1,4 @@
+const http = require("http");
 module.exports = function (RED) {
     function gdfindiWebapiLoginNode(config) {
         RED.nodes.createNode(this, config);
@@ -6,6 +7,21 @@ module.exports = function (RED) {
         var username = this.credentials.username;
         var password = this.credentials.password;
 
+        //web server
+        /*
+        const host = 'localhost';
+        const port = 1880;
+
+        const requestListener = function (req, res){
+            res.writeHead(200);
+            res.end("Test Login Server");
+        }
+
+        const server = http.createServer(requestListener);
+        server.listen(port, host, () => {
+            console.log(`Server is running on http://${host}:${port}`);
+        });
+*/
         // add codeBeforeReceivePayload
 
         node.on('input', function (msg) {

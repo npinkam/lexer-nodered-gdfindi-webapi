@@ -11,12 +11,19 @@ module.exports = function (RED) {
         node.on('input', function (msg) {
             // add codeWhenReceivePayload
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://precom.gdfindi.pro/api/v1/projects/");
-            console.log(`Authorization: ${msg.payload.authorization}`)
-            xhr.setRequestHeader("content-type: application/json", `Authorization: ${msg.payload.authorization}`);
+            xhr.open("GET", "https://precom.gdfindi.pro/api/v1/projects/", false);
+            console.log(msg.payload.authorization)
+            xhr.setRequestHeader('Authorization', msg.payload.authorization);
             xhr.send();
-            msg.payload = xhr.responseText;
-            //msg.payload = authorization;
+            var response = JSON.parse(xhr.responseText);
+            response.forEach(element => {
+                var buffer = element.id;
+                var link = `/req?projectId=${buffer}`;
+                element.id = "<a href=" + link + " target='_self'>" + buffer + "</a>";
+            
+            });
+            var html = tableify(response);
+            msg.payload = html;
             node.send(msg);
         });
     }
