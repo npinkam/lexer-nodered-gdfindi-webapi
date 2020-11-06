@@ -1,4 +1,3 @@
-const http = require("http");
 module.exports = function (RED) {
     function gdfindiWebapiLoginNode(config) {
         RED.nodes.createNode(this, config);

@@ -8,12 +8,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "tableify": "*"
+    "tableify": "*",
+    "xmlhttprequest": "*"
   },
 "node-red" : {
     "nodes": {
         "gdfindi-webapi-login": "gdfindi-webapi-login.js",
-        "gdfindi-webapi-project-list": "gdfindi-webapi-project-list.js"
+        "gdfindi-webapi-project-list": "gdfindi-webapi-project-list.js",
+        "gdfindi-webapi-pvdo-list": "gdfindi-webapi-pvdo-list.js"
     }
 }
 }
