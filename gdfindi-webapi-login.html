@@ -3,23 +3,41 @@
         category: 'lexer-function',
         color: '#a6bbcf',
         defaults: {
+            url: {value:'', required: true}
         },
         credentials: {
             username: { type: "text" },
             password: { type: "password" }
         },
-        inputs: 1,
+        inputs: 0,
         outputs: 1,
         icon: "file.png",
         label: function () {
             return "Login";
         }
     });
+
+    var headerTypes = [
+        {value:"content-type",label:"Content-Type",hasValue: false},
+        {value:"location",label:"Location",hasValue: false},
+        {value:"other",label:RED._("node-red:httpin.label.other"),icon:"red/images/typedInput/az.png"}
+       ]
+    var contentTypes = [
+        {value:"application/json",label:"application/json",hasValue: false},
+        {value:"application/xml",label:"application/xml",hasValue: false},
+        {value:"text/css",label:"text/css",hasValue: false},
+        {value:"text/html",label:"text/html",hasValue: false},
+        {value:"text/plain",label:"text/plain",hasValue: false},
+        {value:"image/gif",label:"image/gif",hasValue: false},
+        {value:"image/png",label:"image/png",hasValue: false},
+        {value:"other",label:RED._("node-red:httpin.label.other"),icon:"red/images/typedInput/az.png"}
+    ];
 </script>
 
 <script type="text/html" data-template-name="Login">
     <div class="form-row">        <label for="node-input-username">Username</label><input type="text" id="node-input-username"></br>
             <label for="node-input-password">Password</label><input type="password" id="node-input-password"></br>
+            <label for="node-input-url">URL</label><input type="text" id="node-input-url" placeholder="/url"></br>
         </div>
 </script>
 
