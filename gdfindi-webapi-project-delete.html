@@ -1,0 +1,26 @@
+<script type="text/javascript">
+    RED.nodes.registerType('gdfindi-webapi-project-delete',{
+        category: 'lexer-function',
+        color: '#a6bbcf',
+        defaults: {
+            projectid: { value: '', required: true, validate: RED.validators.number()}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "file.png",
+        label: function() {
+            return `Project{${this.projectid||'id'}} Delete`;
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="gdfindi-webapi-project-delete">
+    <div class="form-row">
+        <label for="node-input-projectid">Project ID</label>
+        <input type="number" id="node-input-projectid">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="gdfindi-webapi-project-delete">
+    <p>gdfindi-webapi-project-delete</p>
+</script>
