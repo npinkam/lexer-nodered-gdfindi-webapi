@@ -13,13 +13,13 @@
   },
 "node-red" : {
     "nodes": {
-        "gdfindi-webapi-login": "gdfindi-webapi-login.js",
-        "gdfindi-webapi-project-list": "gdfindi-webapi-project-list.js",
-        "gdfindi-webapi-project-info": "gdfindi-webapi-project-info.js",
-        "gdfindi-webapi-project-create": "gdfindi-webapi-project-create.js",
-        "gdfindi-webapi-project-delete": "gdfindi-webapi-project-delete.js",
-        "Project Edit": "gdfindi-webapi-project-edit.js",
-        "gdfindi-webapi-pvdo-list": "gdfindi-webapi-pvdo-list.js"
+        "Login": "gdfindi-webapi-login.js",
+        "Project: List": "gdfindi-webapi-project-list.js",
+        "Project: Informatiion": "gdfindi-webapi-project-info.js",
+        "Project: Create": "gdfindi-webapi-project-create.js",
+        "Project: Delete": "gdfindi-webapi-project-delete.js",
+        "Project: Edit": "gdfindi-webapi-project-edit.js",
+        "PVDO: List": "gdfindi-webapi-pvdo-list.js"
     }
 }
 }

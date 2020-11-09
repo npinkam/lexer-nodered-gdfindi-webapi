@@ -28,5 +28,5 @@ module.exports = function (RED) {
             node.send(msg);
         });
     }
-    RED.nodes.registerType("gdfindi-webapi-project-list", gdfindiWebapiProjectListNode);
+    RED.nodes.registerType("Project: List", gdfindiWebapiProjectListNode);
 }

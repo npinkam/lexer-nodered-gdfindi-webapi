@@ -70,6 +70,6 @@ module.exports = function (RED) {
 
     }
 
-    RED.nodes.registerType("gdfindi-webapi-project-create", gdfindiWebapiProjectCreateNode);
+    RED.nodes.registerType("Project: Create", gdfindiWebapiProjectCreateNode);
 
 }

@@ -37,7 +37,7 @@ module.exports = function (RED) {
             node.send(msg);
         });
     }
-    RED.nodes.registerType("gdfindi-webapi-login", gdfindiWebapiLoginNode, {
+    RED.nodes.registerType("Login", gdfindiWebapiLoginNode, {
         credentials: {
             username: {type:"text"},
             password: {type:"password"}

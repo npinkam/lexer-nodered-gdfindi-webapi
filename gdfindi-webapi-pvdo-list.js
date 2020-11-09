@@ -20,5 +20,5 @@ module.exports = function (RED) {
             node.send(msg);
         });
     }
-    RED.nodes.registerType("gdfindi-webapi-pvdo-list", gdfindiWebapiPvdoListNode);
+    RED.nodes.registerType("PVDO: List", gdfindiWebapiPvdoListNode);
 }

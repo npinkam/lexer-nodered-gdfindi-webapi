@@ -24,5 +24,5 @@ module.exports = function (RED) {
             xhr.send();
         });
     }
-    RED.nodes.registerType("gdfindi-webapi-project-delete", gdfindiWebapiProjectDeleteNode);
+    RED.nodes.registerType("Project: Delete", gdfindiWebapiProjectDeleteNode);
 }

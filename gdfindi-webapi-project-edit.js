@@ -81,6 +81,6 @@ module.exports = function (RED) {
         });
     }
 
-    RED.nodes.registerType("Project Edit", gdfindiWebapiProjectEditNode);
+    RED.nodes.registerType("Project: Edit", gdfindiWebapiProjectEditNode);
 
 }
