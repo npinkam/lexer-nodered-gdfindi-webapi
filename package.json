@@ -18,6 +18,7 @@
         "gdfindi-webapi-project-info": "gdfindi-webapi-project-info.js",
         "gdfindi-webapi-project-create": "gdfindi-webapi-project-create.js",
         "gdfindi-webapi-project-delete": "gdfindi-webapi-project-delete.js",
+        "Project Edit": "gdfindi-webapi-project-edit.js",
         "gdfindi-webapi-pvdo-list": "gdfindi-webapi-pvdo-list.js"
     }
 }
