@@ -11,6 +11,8 @@ module.exports = function (RED) {
     var isUtf8 = require('is-utf8');
     var hashSum = require("hash-sum");
 
+    var ClientOAuth2 = require('client-oauth2');
+
     function rawBodyParser(req, res, next) {
         if (req.skipRawBodyParser) { next(); } // don't parse this if told to skip
         if (req._body) { return next(); }
@@ -55,7 +57,7 @@ module.exports = function (RED) {
 
     var corsSetup = false;
 
-    function createRequestWrapper(node,req) {
+    function createRequestWrapper(node, req) {
         // This misses a bunch of properties (eg headers). Before we use this function
         // need to ensure it captures everything documented by Express and HTTP modules.
         var wrapper = {
@@ -88,11 +90,11 @@ module.exports = function (RED) {
             "xhr",
             "socket" // TODO: tidy this up
         ];
-        toWrap.forEach(function(f) {
+        toWrap.forEach(function (f) {
             if (typeof req[f] === "function") {
-                wrapper[f] = function() {
-                    node.warn(RED._("httpin.errors.deprecated-call",{method:"msg.req."+f}));
-                    var result = req[f].apply(req,arguments);
+                wrapper[f] = function () {
+                    node.warn(RED._("httpin.errors.deprecated-call", { method: "msg.req." + f }));
+                    var result = req[f].apply(req, arguments);
                     if (result === req) {
                         return wrapper;
                     } else {
@@ -107,7 +109,7 @@ module.exports = function (RED) {
 
         return wrapper;
     }
-    function createResponseWrapper(node,res) {
+    function createResponseWrapper(node, res) {
         var wrapper = {
             _res: res
         };
@@ -135,10 +137,10 @@ module.exports = function (RED) {
             "type",
             "vary"
         ];
-        toWrap.forEach(function(f) {
-            wrapper[f] = function() {
-                node.warn(RED._("httpin.errors.deprecated-call",{method:"msg.res."+f}));
-                var result = res[f].apply(res,arguments);
+        toWrap.forEach(function (f) {
+            wrapper[f] = function () {
+                node.warn(RED._("httpin.errors.deprecated-call", { method: "msg.res." + f }));
+                var result = res[f].apply(res, arguments);
                 if (result === res) {
                     return wrapper;
                 } else {
@@ -149,11 +151,11 @@ module.exports = function (RED) {
         return wrapper;
     }
 
-    var corsHandler = function(req,res,next) { next(); }
+    var corsHandler = function (req, res, next) { next(); }
 
     if (RED.settings.httpNodeCors) {
         corsHandler = cors(RED.settings.httpNodeCors);
-        RED.httpNode.options("*",corsHandler);
+        RED.httpNode.options("*", corsHandler);
     }
 
     function gdfindiWebapiLoginNode(config) {
@@ -165,29 +167,39 @@ module.exports = function (RED) {
 
         this.url = config.url;
         if (this.url[0] !== '/') {
-            this.url = '/'+this.url;
+            this.url = '/' + this.url;
         }
 
         this.method = "get";
 
-        this.errorHandler = function(err,req,res,next) {
+        this.errorHandler = function (err, req, res, next) {
             node.warn(err);
             res.sendStatus(500);
         };
 
-        this.callback = function(req,res) {
+        this.callback = function (req, res) {
             var msgid = RED.util.generateId();
             res._msgid = msgid;
             if (node.method.match(/^(post|delete|put|options|patch)$/)) {
-                node.send({_msgid:msgid,req:req,res:createResponseWrapper(node,res),payload:req.body});
+                node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res), payload: req.body });
             } else if (node.method == "get") {
-                node.send({_msgid:msgid,req:req,res:createResponseWrapper(node,res),payload:req.query});
+                console.log('in get method')
+            var lexerAuth = new ClientOAuth2({
+                accessTokenUri:  "https://precom.gdfindi.pro/api/token",
+            })
+            lexerAuth.owner.getToken(username, password)
+                .then(function (user) {
+                    //user=> { accessToken: '...', tokenType: 'bearer', ... }
+                    var authorization = user.tokenType + ' ' + user.accessToken;
+                    node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res), payload: {authorization} });
+                });
+                //node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res), payload: req.query });
             } else {
-                node.send({_msgid:msgid,req:req,res:createResponseWrapper(node,res)});
+                node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res) });
             }
         };
 
-        var httpMiddleware = function(req,res,next) { next(); }
+        var httpMiddleware = function (req, res, next) { next(); }
 
         if (RED.settings.httpNodeMiddleware) {
             if (typeof RED.settings.httpNodeMiddleware === "function") {
@@ -196,33 +208,33 @@ module.exports = function (RED) {
         }
 
         var maxApiRequestSize = RED.settings.apiMaxLength || '5mb';
-        var jsonParser = bodyParser.json({limit:maxApiRequestSize});
-        var urlencParser = bodyParser.urlencoded({limit:maxApiRequestSize,extended:true});
+        var jsonParser = bodyParser.json({ limit: maxApiRequestSize });
+        var urlencParser = bodyParser.urlencoded({ limit: maxApiRequestSize, extended: true });
 
-        var metricsHandler = function(req,res,next) { next(); }
+        var metricsHandler = function (req, res, next) { next(); }
         if (this.metric()) {
-            metricsHandler = function(req, res, next) {
+            metricsHandler = function (req, res, next) {
                 var startAt = process.hrtime();
-                onHeaders(res, function() {
+                onHeaders(res, function () {
                     if (res._msgid) {
                         var diff = process.hrtime(startAt);
                         var ms = diff[0] * 1e3 + diff[1] * 1e-6;
                         var metricResponseTime = ms.toFixed(3);
                         var metricContentLength = res.getHeader("content-length");
                         //assuming that _id has been set for res._metrics in HttpOut node!
-                        node.metric("response.time.millis", {_msgid:res._msgid} , metricResponseTime);
-                        node.metric("response.content-length.bytes", {_msgid:res._msgid} , metricContentLength);
+                        node.metric("response.time.millis", { _msgid: res._msgid }, metricResponseTime);
+                        node.metric("response.content-length.bytes", { _msgid: res._msgid }, metricContentLength);
                     }
                 });
                 next();
             };
         }
 
-        var multipartParser = function(req,res,next) { next(); }
+        var multipartParser = function (req, res, next) { next(); }
         if (this.upload) {
             var mp = multer({ storage: multer.memoryStorage() }).any();
-            multipartParser = function(req,res,next) {
-                mp(req,res,function(err) {
+            multipartParser = function (req, res, next) {
+                mp(req, res, function (err) {
                     req._body = true;
                     next(err);
                 })
@@ -230,61 +242,30 @@ module.exports = function (RED) {
         }
 
         if (this.method == "get") {
-            RED.httpNode.get(this.url,cookieParser(),httpMiddleware,corsHandler,metricsHandler,this.callback,this.errorHandler);
+            RED.httpNode.get(this.url, cookieParser(), httpMiddleware, corsHandler, metricsHandler, this.callback, this.errorHandler);
         } else if (this.method == "post") {
-            RED.httpNode.post(this.url,cookieParser(),httpMiddleware,corsHandler,metricsHandler,jsonParser,urlencParser,multipartParser,rawBodyParser,this.callback,this.errorHandler);
+            RED.httpNode.post(this.url, cookieParser(), httpMiddleware, corsHandler, metricsHandler, jsonParser, urlencParser, multipartParser, rawBodyParser, this.callback, this.errorHandler);
         } else if (this.method == "put") {
-            RED.httpNode.put(this.url,cookieParser(),httpMiddleware,corsHandler,metricsHandler,jsonParser,urlencParser,rawBodyParser,this.callback,this.errorHandler);
+            RED.httpNode.put(this.url, cookieParser(), httpMiddleware, corsHandler, metricsHandler, jsonParser, urlencParser, rawBodyParser, this.callback, this.errorHandler);
         } else if (this.method == "patch") {
-            RED.httpNode.patch(this.url,cookieParser(),httpMiddleware,corsHandler,metricsHandler,jsonParser,urlencParser,rawBodyParser,this.callback,this.errorHandler);
+            RED.httpNode.patch(this.url, cookieParser(), httpMiddleware, corsHandler, metricsHandler, jsonParser, urlencParser, rawBodyParser, this.callback, this.errorHandler);
         } else if (this.method == "delete") {
-            RED.httpNode.delete(this.url,cookieParser(),httpMiddleware,corsHandler,metricsHandler,jsonParser,urlencParser,rawBodyParser,this.callback,this.errorHandler);
+            RED.httpNode.delete(this.url, cookieParser(), httpMiddleware, corsHandler, metricsHandler, jsonParser, urlencParser, rawBodyParser, this.callback, this.errorHandler);
         }
 
-        this.on("close",function() {
+        this.on("close", function () {
             var node = this;
-            RED.httpNode._router.stack.forEach(function(route,i,routes) {
+            RED.httpNode._router.stack.forEach(function (route, i, routes) {
                 if (route.route && route.route.path === node.url && route.route.methods[node.method]) {
-                    routes.splice(i,1);
+                    routes.splice(i, 1);
                 }
             });
-        });
-
-        //web server
-        /*
-        const host = 'localhost';
-        const port = 1880;
-
-        const requestListener = function (req, res){
-            res.writeHead(200);
-            res.end("Test Login Server");
-        }
-
-        const server = http.createServer(requestListener);
-        server.listen(port, host, () => {
-            console.log(`Server is running on http://${host}:${port}`);
-        });
-*/
-        // add codeBeforeReceivePayload
-
-        node.on('input', function (msg) {
-
-            // add codeWhenReceivePayload
-            msg.oauth2Request = {
-                "access_token_url": "https://precom.gdfindi.pro/api/token",
-                "credentials": {
-                    "grant_type": "password",
-                    "username": username,
-                    "password": password
-                }
-            };
-            node.send(msg);
         });
     }
     RED.nodes.registerType("Login", gdfindiWebapiLoginNode, {
         credentials: {
-            username: {type:"text"},
-            password: {type:"password"}
+            username: { type: "text" },
+            password: { type: "password" }
         }
     });
 }

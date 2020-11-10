@@ -9,7 +9,8 @@
   "license": "ISC",
   "dependencies": {
     "tableify": "*",
-    "xmlhttprequest": "*"
+    "xmlhttprequest": "*",
+    "client-oauth2": "*"
   },
 "node-red" : {
     "nodes": {
