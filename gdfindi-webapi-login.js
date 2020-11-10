@@ -183,16 +183,16 @@ module.exports = function (RED) {
             if (node.method.match(/^(post|delete|put|options|patch)$/)) {
                 node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res), payload: req.body });
             } else if (node.method == "get") {
-                console.log('in get method')
-            var lexerAuth = new ClientOAuth2({
-                accessTokenUri:  "https://precom.gdfindi.pro/api/token",
-            })
-            lexerAuth.owner.getToken(username, password)
-                .then(function (user) {
-                    //user=> { accessToken: '...', tokenType: 'bearer', ... }
-                    var authorization = user.tokenType + ' ' + user.accessToken;
-                    node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res), payload: {authorization} });
-                });
+                // call back => get login token from server
+                var lexerAuth = new ClientOAuth2({
+                    accessTokenUri: "https://precom.gdfindi.pro/api/token",
+                })
+                lexerAuth.owner.getToken(username, password)
+                    .then(function (user) {
+                        //user=> { accessToken: '...', tokenType: 'bearer', ... }
+                        var authorization = user.tokenType + ' ' + user.accessToken;
+                        node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res), payload: { authorization } });
+                    });
                 //node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res), payload: req.query });
             } else {
                 node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res) });
