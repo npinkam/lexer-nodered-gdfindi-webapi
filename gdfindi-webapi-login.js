@@ -1,7 +1,6 @@
 module.exports = function (RED) {
     "use strict";
 
-    const wrapper = require('./lib/wrapper.js');
     const httpInput = require('./lib/httpInput.js');
 
     var ClientOAuth2 = require('client-oauth2');
@@ -15,28 +14,20 @@ module.exports = function (RED) {
 
         this.url = config.url;
         this.method = "get";
-        
-        this.callback = function (req, res) {
-            var msgid = RED.util.generateId();
-            res._msgid = msgid;
-            if (node.method.match(/^(post|delete|put|options|patch)$/)) {
-                node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: req.body });
-            } else if (node.method == "get") {
-                // call back => get login token from server
-                var lexerAuth = new ClientOAuth2({
-                    accessTokenUri: "https://precom.gdfindi.pro/api/token",
+
+        this.callback = new Promise((resolve, reject) => {
+            // call back => get login token from server
+            var lexerAuth = new ClientOAuth2({
+                accessTokenUri: "https://precom.gdfindi.pro/api/token",
+            });
+            lexerAuth.owner.getToken(username, password)
+                .then(function (user) {
+                    //user=> { accessToken: '...', tokenType: 'bearer', ... }
+                    var authorization = user.tokenType + ' ' + user.accessToken;
+                    //msg.payload.authorization => need {}
+                    resolve({ authorization });
                 });
-                lexerAuth.owner.getToken(username, password)
-                    .then(function (user) {
-                        //user=> { accessToken: '...', tokenType: 'bearer', ... }
-                        var authorization = user.tokenType + ' ' + user.accessToken;
-                        node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: { authorization } });
-                    });
-                //node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res), payload: req.query });
-            } else {
-                node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res) });
-            }
-        };
+        });
 
         httpInput(RED, node, this.url, this.method, this.callback);
     }
