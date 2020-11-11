@@ -1,6 +1,6 @@
 module.exports = function (RED) {
     "use strict";
-    const httpInput = require('./lib/httpIn.js');
+    const httpIn = require('./lib/httpIn.js');
     var ClientOAuth2 = require('client-oauth2');
 
     function gdfindiWebapiLoginNode(config) {
@@ -29,7 +29,7 @@ module.exports = function (RED) {
         });
 
         // call httpInput library
-        httpInput(RED, node, this.url, this.method, this.callback);
+        httpIn(RED, node, this.url, this.method, this.callback);
     }
     RED.nodes.registerType("Login", gdfindiWebapiLoginNode, {
         credentials: {
