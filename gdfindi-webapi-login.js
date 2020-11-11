@@ -186,7 +186,7 @@ module.exports = function (RED) {
                 // call back => get login token from server
                 var lexerAuth = new ClientOAuth2({
                     accessTokenUri: "https://precom.gdfindi.pro/api/token",
-                })
+                });
                 lexerAuth.owner.getToken(username, password)
                     .then(function (user) {
                         //user=> { accessToken: '...', tokenType: 'bearer', ... }
