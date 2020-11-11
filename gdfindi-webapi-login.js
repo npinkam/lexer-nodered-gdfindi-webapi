@@ -1,8 +1,6 @@
 module.exports = function (RED) {
     "use strict";
-
     const httpInput = require('./lib/httpInput.js');
-
     var ClientOAuth2 = require('client-oauth2');
 
     function gdfindiWebapiLoginNode(config) {
@@ -15,6 +13,7 @@ module.exports = function (RED) {
         this.url = config.url;
         this.method = "get";
 
+        //custom callback function to get authorization token
         this.callback = new Promise((resolve, reject) => {
             // call back => get login token from server
             var lexerAuth = new ClientOAuth2({
@@ -29,6 +28,7 @@ module.exports = function (RED) {
                 });
         });
 
+        // call httpInput library
         httpInput(RED, node, this.url, this.method, this.callback);
     }
     RED.nodes.registerType("Login", gdfindiWebapiLoginNode, {
