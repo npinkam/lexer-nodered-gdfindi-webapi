@@ -1,6 +1,6 @@
 module.exports = function (RED) {
     "use strict";
-    const httpInput = require('./lib/httpInput.js');
+    const httpInput = require('./lib/httpIn.js');
     var ClientOAuth2 = require('client-oauth2');
 
     function gdfindiWebapiLoginNode(config) {
