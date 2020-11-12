@@ -10,7 +10,7 @@ module.exports = function (RED) {
         //properties field
 
         // add codeBeforeReceivePayload
-        node.on('input', function (msg, _send, done) {
+        node.on('input', function (msg, done) {
             // add codeWhenReceivePayload
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "https://precom.gdfindi.pro/api/v1/projects/", false);
@@ -28,9 +28,8 @@ module.exports = function (RED) {
             var html = tableify(response);
             msg.payload = html;
 
-            /* -------- Test http out -------- */
+            /* -------- http out -------- */
             httpOut(RED, node, msg, done);
-            /* -------- Test http out -------- */
         });
     }
     RED.nodes.registerType("Project: List", gdfindiWebapiProjectListNode);
