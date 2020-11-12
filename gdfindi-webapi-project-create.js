@@ -60,7 +60,7 @@ module.exports = function (RED) {
 
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "https://precom.gdfindi.pro/api/v1/projects/", false);
-            xhr.setRequestHeader('Authorization', msg.payload.authorization);
+            xhr.setRequestHeader('Authorization', msg.cookies.authorization);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.send(JSON.stringify(content));
             var response = JSON.parse(xhr.responseText);

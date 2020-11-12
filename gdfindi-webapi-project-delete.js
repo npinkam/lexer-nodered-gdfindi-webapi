@@ -15,7 +15,7 @@ module.exports = function (RED) {
             // add codeWhenReceivePayload
             var xhr = new XMLHttpRequest();
             xhr.open("DELETE", "https://precom.gdfindi.pro/api/v1/projects/" + this.projectid, true);
-            xhr.setRequestHeader('Authorization', msg.payload.authorization);
+            xhr.setRequestHeader('Authorization', msg.cookies.authorization);
             xhr.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 204) {
                     var html = `<p>Delete successfully.</p>`

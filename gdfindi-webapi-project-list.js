@@ -14,18 +14,22 @@ module.exports = function (RED) {
             // add codeWhenReceivePayload
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "https://precom.gdfindi.pro/api/v1/projects/", false);
-            xhr.setRequestHeader('Authorization', msg.payload.authorization);
+            xhr.setRequestHeader('Authorization', msg.cookies.authorization);
             xhr.send();
             var response = JSON.parse(xhr.responseText);
-            /*
+            msg.payload = {};
+            msg.payload = response;
+            node.send(msg);
+            
             response.forEach(element => {
                 var buffer = element.id;
                 var link = `/req?projectId=${buffer}`;
                 element.id = "<a href=" + link + " target='_self'>" + buffer + "</a>";
             
             });
-            */
+            
             var html = tableify(response);
+            msg.payload = '';
             msg.payload = html;
 
             /* -------- http out -------- */

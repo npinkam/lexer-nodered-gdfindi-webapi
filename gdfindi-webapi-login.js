@@ -1,6 +1,7 @@
 module.exports = function (RED) {
     "use strict";
     const httpIn = require('./lib/httpIn.js');
+    const wrapper = require('./lib/wrapper.js');
     var ClientOAuth2 = require('client-oauth2');
 
     function gdfindiWebapiLoginNode(config) {
@@ -14,7 +15,7 @@ module.exports = function (RED) {
         this.method = "get";
 
         //custom callback function to get authorization token
-        this.callback = new Promise((resolve, reject) => {
+        /*this.callback = new Promise((resolve, reject) => {
             // call back => get login token from server
             var lexerAuth = new ClientOAuth2({
                 accessTokenUri: "https://precom.gdfindi.pro/api/token",
@@ -26,10 +27,45 @@ module.exports = function (RED) {
                     //msg.payload.authorization => need {}
                     resolve({ authorization });
                 });
-        });
+        });*/
+/*
+        this.callback = function (req, res) {
+            var msgid = RED.util.generateId();
+            res._msgid = msgid;
+            console.log(callback)
+            if (callback != {}) {
+                callback.then((resp) => {
+                    node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res), payload: resp });
+                });
+            } else {
+                if (node.method.match(/^(post|delete|put|options|patch)$/)) {
+                    node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res), payload: req.body });
+                } else if (node.method == "get") {
+                    node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res), payload: req.query });
+                } else {
+                    node.send({ _msgid: msgid, req: req, res: createResponseWrapper(node, res) });
+                }
+            }
+        };*/
+
+        //callback function when url is accessed
+        this.callback = function (req, res){
+            var msgid = RED.util.generateId();
+            res._msgid = msgid;
+            var lexerAuth = new ClientOAuth2({
+                accessTokenUri: "https://precom.gdfindi.pro/api/token",
+            });
+            lexerAuth.owner.getToken(username, password)
+                .then(function (user) {
+                    //user=> { accessToken: '...', tokenType: 'bearer', ... }
+                    var authorization = user.tokenType + ' ' + user.accessToken;
+                    //msg.payload.authorization => need {}
+                    node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: true, cookies: {authorization} })
+                });
+        }
 
         // call httpInput library
-        httpIn(RED, node, this.url, this.method, this.callback);
+        new httpIn(RED, node, this.url, this.method, this.callback);
     }
     RED.nodes.registerType("Login", gdfindiWebapiLoginNode, {
         credentials: {

@@ -61,7 +61,7 @@ module.exports = function (RED) {
 
             var xhr = new XMLHttpRequest();
             xhr.open("PUT", "https://precom.gdfindi.pro/api/v1/projects/" + this.projectid, true);
-            xhr.setRequestHeader('Authorization', msg.payload.authorization);
+            xhr.setRequestHeader('Authorization', msg.cookies.authorization);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.onreadystatechange = function (res) {
                 if (this.readyState == 4 && this.status == 200) {
