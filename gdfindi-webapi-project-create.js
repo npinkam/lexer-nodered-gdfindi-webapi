@@ -1,6 +1,7 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-var tableify = require('tableify');
 module.exports = function (RED) {
+    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    var tableify = require('tableify');
+    var httpOut = require('./lib/httpOut.js');
 
     function gdfindiWebapiProjectCreateNode(config) {
 
@@ -39,7 +40,7 @@ module.exports = function (RED) {
         // add codeBeforeReceivePayload
 
 
-        node.on('input', function (msg) {
+        node.on('input', function (msg, done) {
             // add codeWhenReceivePayload
             // content to be sent to the server
             var content = {
@@ -65,7 +66,9 @@ module.exports = function (RED) {
             var response = JSON.parse(xhr.responseText);
             var html = tableify(response);
             msg.payload = html;
-            node.send(msg);
+
+            /* -------- http out -------- */
+            httpOut(RED, node, msg, done);
         });
 
     }
