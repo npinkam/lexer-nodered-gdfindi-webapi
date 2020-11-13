@@ -1,6 +1,7 @@
 module.exports = function (RED) {
     "use strict";
     const httpIn = require('./lib/httpIn.js');
+    const httpOut = require('./lib/httpOut.js');
     const wrapper = require('./lib/wrapper.js');
     var ClientOAuth2 = require('client-oauth2');
 
@@ -49,7 +50,7 @@ module.exports = function (RED) {
         };*/
 
         //callback function when url is accessed
-        this.callback = function (req, res){
+        this.callback = function (req, res, done){
             var msgid = RED.util.generateId();
             res._msgid = msgid;
             var lexerAuth = new ClientOAuth2({
@@ -61,6 +62,15 @@ module.exports = function (RED) {
                     var authorization = user.tokenType + ' ' + user.accessToken;
                     //msg.payload.authorization => need {}
                     node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: true, cookies: {authorization} })
+                }).catch(err => {
+                    var error = `
+                    <p>Username or Password ERROR!!!</p>
+                    <script type="text/javascript">
+                        window.alert("Username or Password ERROR!!!");
+                    </script>
+                    `;
+                    var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: error };
+                    httpOut(RED, node, msg, done);
                 });
         }
 
