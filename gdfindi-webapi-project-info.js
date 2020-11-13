@@ -29,7 +29,16 @@ module.exports = function (RED) {
                 xhr.setRequestHeader('Authorization', req.cookies.authorization);
                 xhr.send();
                 var response = JSON.parse(xhr.responseText);
-                var html = tableify(response);
+                var header = `
+                <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+                <a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/">Top</a><br/><br/>
+                <a id="deleteProject" href="/del?projectId=${projectId}">Delete Project</a>
+                <script type="text/javascript">
+                    $('#deleteProject').on('click', function () {
+                        return confirm('Do you want to delete Project#${projectId}?');
+                    });
+                </script>`;
+                var html = header + tableify(response);
 
                 //node.send structure:
                 //get -> payload: req.query
