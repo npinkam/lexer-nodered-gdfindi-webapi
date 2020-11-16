@@ -4,7 +4,7 @@ module.exports = function (RED) {
     const httpOut = require('./lib/httpOut.js');
     const httpIn = require('./lib/httpIn.js');
     const wrapper = require('./lib/wrapper.js');
-    
+
 
     function gdfindiWebapiPvdoListNode(config) {
         RED.nodes.createNode(this, config);
@@ -12,6 +12,7 @@ module.exports = function (RED) {
 
         this.url = "/PVDOreq";
         this.method = "get";
+        this.urlAbort = "/PVDOabort"
 
         //callback function when url is accessed
         this.callback = function (req, res, done) {
@@ -29,7 +30,40 @@ module.exports = function (RED) {
 
         }
 
+        //callback function when url is accessed
+        this.callbackAbort = function (req, res, done) {
+            /** mandatory **/
+            var msgid = RED.util.generateId();
+            res._msgid = msgid;
+            /** mandatory **/
+
+            //GET
+            var MiningID = req.query.MiningID;
+
+            console.log(MiningID)
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("PUT", `https://precom.gdfindi.pro/api/v1/PVDO/${MiningID}/Cancel`, true);
+            xhr.setRequestHeader('Authorization', req.cookies.authorization);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
+            xhr.onreadystatechange = function (res) {
+                if (this.readyState == 4 && this.status == 200) {
+                    var response = JSON.parse(this.responseText);
+                    var header = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/">Top</a><br/><br/>`;
+                    msg.payload = header + tableify(response);
+                    // -------- http out -------- 
+                    httpOut(RED, node, msg, done);
+                }
+               //console.log('state: '+this.readyState+'\n status: '+this.status+'\n'+this.responseText+'\n -----------------------')
+            };
+            xhr.send();
+
+        }
+
         httpIn(RED, node, this.url, this.method, this.callback);
+
+        httpIn(RED, node, this.urlAbort, this.method, this.callbackAbort);
 
         // add codeBeforeReceivePayload
         node.on('input', function (msg, done) {
@@ -43,18 +77,24 @@ module.exports = function (RED) {
             //current mining
             var buffer = response.miningmanager_status.CurrentMiningID;
             var link = `/PVDOreq?MiningID=${buffer}`;
-            response.miningmanager_status.CurrentMiningID = "<a href=" + link + " target='_self'>" + buffer + "</a>"; 
-            
+            response.miningmanager_status.CurrentMiningID = "<a href=" + link + " target='_self'>" + buffer + "</a>";
+
             response.mining_statuses.forEach(element => {
                 var buffer = element.MiningID;
                 var link = `/PVDOreq?MiningID=${buffer}`;
                 element.MiningID = "<a href=" + link + " target='_self'>" + buffer + "</a>";
+
+                if (element.Status != 'Complete') {
+                    var bufferStatus = element.Status;
+                    link = `/PVDOabort?MiningID=${buffer}`;
+                    element.Status = `<p>${bufferStatus} (</p><a href=${link} target='_self'>ABORT</a><p>)</p>`;
+                }
             });
 
             var html = tableify(response);
             msg.payload = html;
 
-           // -------- http out -------- 
+            // -------- http out -------- 
             httpOut(RED, node, msg, done);
         });
     }
