@@ -12,8 +12,6 @@ module.exports = function (RED) {
         //properties field
         //this.projectid = config.projectid;
 
-        //properties field
-
         this.url = "/req";
         this.method = "get";
         this.urlDel = "/del";
