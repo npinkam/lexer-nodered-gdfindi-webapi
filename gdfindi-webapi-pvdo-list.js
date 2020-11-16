@@ -25,8 +25,6 @@ module.exports = function (RED) {
             //other -> payload: req.body
             //node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: payload })
             var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: req.query };
-            // -------- http out -------- 
-            httpOut(RED, node, msg, done);
             node.send(msg);
 
         }
