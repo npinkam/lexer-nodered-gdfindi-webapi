@@ -11,8 +11,6 @@ module.exports = function (RED) {
 
         // add codeBeforeReceivePayload
         node.on('input', function (msg, done) {
-            // call httpInput library
-
             var MiningID = msg.payload.MiningID;
             var xhr = new XMLHttpRequest();
             xhr.open("GET", `https://precom.gdfindi.pro/api/v1/PVDO/${MiningID}/Results`, false);
