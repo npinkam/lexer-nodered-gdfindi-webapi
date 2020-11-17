@@ -70,7 +70,7 @@ module.exports = function (RED) {
             // add codeWhenReceivePayload
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "https://precom.gdfindi.pro/api/v1/PVDO", false);
-            xhr.setRequestHeader('Authorization', msg.cookies.authorization);
+            xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
             xhr.send();
             var response = JSON.parse(xhr.responseText);
 
