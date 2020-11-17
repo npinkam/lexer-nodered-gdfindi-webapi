@@ -17,8 +17,6 @@
         "Login": "gdfindi-webapi-login.js",
         "Project: List": "gdfindi-webapi-project-list.js",
         "Project: Informatiion": "gdfindi-webapi-project-info.js",
-        "Project: Delete": "gdfindi-webapi-project-delete.js",
-        "Project: Edit": "gdfindi-webapi-project-edit.js",
         "PVDO: List": "gdfindi-webapi-pvdo-list.js",
         "PVDO: Result": "gdfindi-webapi-pvdo-result.js",
         "PVDO: Gantt Chart": "gdfindi-webapi-pvdo-gantt-chart.js"

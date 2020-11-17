@@ -1,13 +1,15 @@
 <script type="text/javascript">
-    RED.nodes.registerType('Project: Information',{
+    RED.nodes.registerType('Project: Information', {
         category: 'lexer-function',
         color: '#a6bbcf',
         defaults: {
+            enableEdit: { value: true },
+            enableDelete: { value: true }
         },
-        inputs:1,
-        outputs:1,
+        inputs: 1,
+        outputs: 1,
         icon: "file.png",
-        label: function() {
+        label: function () {
             return `Project Info`;
         }
     });
@@ -15,6 +17,12 @@
 
 <script type="text/html" data-template-name="Project: Information">
     <div class="form-row">
+        <label for="node-input-enableEdit" style="width:70%">
+        <input type="checkbox" id="node-input-enableEdit" style="display:inline-block; width:22px; vertical-align:top;">  Enable edit project
+        </label>
+        <label for="node-input-enableDelete" style="width:70%">
+            <input type="checkbox" id="node-input-enableDelete" style="display:inline-block; width:22px; vertical-align:top;">  Enable delete project
+            </label>
     </div>
 </script>
 
