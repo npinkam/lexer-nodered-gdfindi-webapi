@@ -170,7 +170,7 @@ body {
                 }).catch(err => {
                     var error = `
                     <a href="javascript:history.back()">Go Back</a></br></br>
-                    <p>${err.body.error_description}</p>
+                    <p>${JSON.stringify(err)}</p>
                     <script type="text/javascript">
                         window.alert("${err.body.error_description}");
                     </script>
