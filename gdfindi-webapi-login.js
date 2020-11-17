@@ -168,13 +168,15 @@ body {
                     //msg.payload.authorization => need {}
                     node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: true, cookies: { authorization } })
                 }).catch(err => {
-                    /*var error = `
-                    <p>Username or Password ERROR!!!</p>
+                    var error = `
+                    <a href="javascript:history.back()">Go Back</a></br></br>
+                    <p>${err.body.error_description}</p>
                     <script type="text/javascript">
-                        window.alert("Username or Password ERROR!!!");
+                        window.alert("${err.body.error_description}");
                     </script>
-                    `;*/
-                    var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: err };
+                    `;
+
+                    var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: error };
                     httpOut(RED, node, msg, done);
                 });
         }
