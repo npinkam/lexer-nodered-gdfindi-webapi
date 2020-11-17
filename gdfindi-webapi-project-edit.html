@@ -7,6 +7,7 @@
         color: '#a6bbcf',
 
         defaults: {
+            /*
             projectid: { value: '', required: true },
 
             name: { value: "" },
@@ -32,22 +33,23 @@
             latitude: { value: "" },
 
             longitude: { value: "" }
+            */
 
         },
 
         inputs: 1,
 
-        outputs: 1,
+        outputs: 0,
 
         icon: "file.png",
 
         label: function () {
 
-            return `Project{${this.projectid || 'id'}} Edit`;
+            return `Project Edit`;
 
         },
         oneditprepare: () => {
-            $("#node-input-extended").typedInput({
+            /*$("#node-input-extended").typedInput({
                 type: "json",
                 types: ["json"]
             });
@@ -78,7 +80,7 @@
             $("#node-input-transportActivities").typedInput({
                 type: "json",
                 types: ["json"]
-            });
+            });*/
         }
 
     });
@@ -89,7 +91,7 @@
 <script type="text/html" data-template-name="Project: Edit">
 
     <div class="form-row">
-        
+    <!--
     <label for="node-input-projectid">Project ID</label><input type="number" id="node-input-projectid"></br></br>
 
     <label for="node-input-name">Name</label><input type="text" id="node-input-name"></br></br>
@@ -115,7 +117,7 @@
     <label for="node-input-latitude">Latitude</label><input type="text" id="node-input-latitude"></br></br>
     
     <label for="node-input-longitude">Longitude</label><input type="text" id="node-input-longitude"></br></br>
-    
+    -->
     </div>
     
     </script>
