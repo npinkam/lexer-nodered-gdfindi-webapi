@@ -16,48 +16,6 @@ module.exports = function (RED) {
 
         //callback function when url is accessed
         this.callback = function (req, res, done) {
-<<<<<<< HEAD
-            if (enableNode == true) {
-                /** mandatory **/
-                var msgid = RED.util.generateId();
-                res._msgid = msgid;
-                /** mandatory **/
-
-                var projectId = req.query.projectId;
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", "https://precom.gdfindi.pro/api/v1/projects/" + projectId, false);
-                xhr.setRequestHeader('Authorization', req.cookies.authorization);
-                xhr.send();
-                var response = JSON.parse(xhr.responseText);
-                var header = `
-                <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-                <a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/">Top</a><br/><br/>
-                <a id="deleteProject" href="/del?projectId=${projectId}">Delete Project</a>
-                <script type="text/javascript">
-                    $('#deleteProject').on('click', function () {
-                        return confirm('Do you want to delete Project#${projectId}?');
-                    });
-                </script>`;
-                var html = header + tableify(response);
-
-                //node.send structure:
-                //get -> payload: req.query
-                //other -> payload: req.body
-                //node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: payload })
-                var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: "" };
-                //node.emit('input', msg);
-                msg.payload = html;
-
-                // -------- http out -------- 
-                httpOut(RED, node, msg, done);
-
-                // -------- send raw data
-                msg.payload = {};
-                msg.payload = response;
-                node.send(msg);
-            }
-        }
-=======
             /** mandatory **/
             var msgid = RED.util.generateId();
             res._msgid = msgid;
@@ -78,7 +36,6 @@ module.exports = function (RED) {
             var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: "" };
             //node.emit('input', msg);
             msg.payload = html;
->>>>>>> pvdo_project
 
             // -------- http out -------- 
             httpOut(RED, node, msg, done);
