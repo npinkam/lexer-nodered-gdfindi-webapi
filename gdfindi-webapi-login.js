@@ -168,15 +168,15 @@ body {
                     //msg.payload.authorization => need {}
                     node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: true, cookies: { authorization } })
                 }).catch(err => {
-                    var error = `
+                    /*var error = `
                     <a href="javascript:history.back()">Go Back</a></br></br>
                     <p>${JSON.stringify(err)}</p>
                     <script type="text/javascript">
                         window.alert("${err.body.error_description}");
                     </script>
-                    `;
+                    `;*/
 
-                    var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: error };
+                    var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: err };
                     httpOut(RED, node, msg, done);
                 });
         }
