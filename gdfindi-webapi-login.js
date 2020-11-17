@@ -157,7 +157,7 @@ body {
             var lexerAuth = new ClientOAuth2({
                 accessTokenUri: "https://precom.gdfindi.pro/api/token",
             });
-            console.log(req);
+            
             var username = req.body.username;
             var password = req.body.password;
 
