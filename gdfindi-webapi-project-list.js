@@ -93,7 +93,7 @@ module.exports = function (RED) {
             <body>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.6.8/beautify.js"></script>
             <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" rel="stylesheet"/>
-            <a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/">Top</a><br/><br/>
+            <a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>
                 <form id="edit" action=/submitcreate method="post">
                   <div class="title">Create New Project</div>
                   <textarea name="editor">${JSON.stringify(content)}</textarea>
