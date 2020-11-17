@@ -147,7 +147,7 @@ module.exports = function (RED) {
     
     // Setup
     editor.setTheme("ace/theme/monokai");
-    editor.getSession().setMode("ace/mode/java");
+    editor.getSession().setMode("ace/mode/json");
     syncEditor();
     
     // Main Logic
