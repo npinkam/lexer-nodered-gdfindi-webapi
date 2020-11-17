@@ -63,13 +63,13 @@ module.exports = function (RED) {
                     //msg.payload.authorization => need {}
                     node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: true, cookies: {authorization} })
                 }).catch(err => {
-                    var error = `
+                    /*var error = `
                     <p>Username or Password ERROR!!!</p>
                     <script type="text/javascript">
                         window.alert("Username or Password ERROR!!!");
                     </script>
-                    `;
-                    var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: error };
+                    `;*/
+                    var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: err };
                     httpOut(RED, node, msg, done);
                 });
         }
