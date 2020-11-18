@@ -17,33 +17,40 @@ module.exports = function (RED) {
             xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
             xhr.send();
             var response = JSON.parse(xhr.responseText);
-            
-            // get gantt chart element
-            var result = response.results[0].statisticalResult.process;
 
-            //convert result from pvdo to a proper json
-            var key = result[0];
-            result.shift();
-            var value = result;
-            var today = new Date();
-            var arrayToHtml = [];
-            var addToArray = [];
-            for (var i = 0; i < value.length; i++) {
-                var product = value[i][0];
-                var processName = value[i][1];
-                var processId = value[i][2].substring(2);
-                var production = value[i][3];
-                var startTime = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + ' ' + new Date(value[i][4] * 1000).toISOString().substr(11, 8);
-                var endTime = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + ' ' + new Date(value[i][5] * 1000).toISOString().substr(11, 8);
-                if (i % 4 != 0)
-                    addToArray = [processName, product + ': ' + processId, product, startTime, endTime, null, 0, value[i - 1][1]];
-                else
-                    addToArray = [processName, product + ': ' + processId, product, startTime, endTime, null, 0, null];
-                arrayToHtml.push(addToArray);
-            }
+            // check if there is result
+            if (response.results === undefined || response.results.length == 0) {
+                var html = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a>&nbsp;<br /><br />
+                <p>Data is already retrieved!</p>`;
+                msg.payload = html;
+                httpOut(RED, node, msg, done);
+            } else {
+                // get gantt chart element
+                var result = response.results[0].statisticalResult.process;
+
+                //convert result from pvdo to a proper json
+                var key = result[0];
+                result.shift();
+                var value = result;
+                var today = new Date();
+                var arrayToHtml = [];
+                var addToArray = [];
+                for (var i = 0; i < value.length; i++) {
+                    var product = value[i][0];
+                    var processName = value[i][1];
+                    var processId = value[i][2].substring(2);
+                    var production = value[i][3];
+                    var startTime = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + ' ' + new Date(value[i][4] * 1000).toISOString().substr(11, 8);
+                    var endTime = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + ' ' + new Date(value[i][5] * 1000).toISOString().substr(11, 8);
+                    if (i % 4 != 0)
+                        addToArray = [processName, product + ': ' + processId, product, startTime, endTime, null, 0, value[i - 1][1]];
+                    else
+                        addToArray = [processName, product + ': ' + processId, product, startTime, endTime, null, 0, null];
+                    arrayToHtml.push(addToArray);
+                }
                 var payload = JSON.stringify(arrayToHtml);
-            //google charts
-            var html = `
+                //google charts
+                var html = `
 <html>
 
 <head>
@@ -109,11 +116,12 @@ module.exports = function (RED) {
 </body>
 
 </html>
-`
+`;
 
-        msg.payload = html;
+                msg.payload = html;
 
-        httpOut(RED, node, msg, done);
+                httpOut(RED, node, msg, done);
+            }
 
         });
     }
