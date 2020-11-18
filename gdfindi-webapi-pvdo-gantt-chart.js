@@ -17,7 +17,7 @@ module.exports = function (RED) {
             xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
             xhr.send();
             var response = JSON.parse(xhr.responseText);
-            console.log(response);
+            
             // get gantt chart element
             var result = response.results[0].statisticalResult.process;
 

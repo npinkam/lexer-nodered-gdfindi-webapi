@@ -40,8 +40,6 @@ module.exports = function (RED) {
             //GET
             var MiningID = req.query.MiningID;
 
-            console.log(MiningID)
-
             var xhr = new XMLHttpRequest();
             xhr.open("PUT", `https://precom.gdfindi.pro/api/v1/PVDO/${MiningID}/Cancel`, true);
             xhr.setRequestHeader('Authorization', req.cookies.authorization);
