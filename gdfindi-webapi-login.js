@@ -182,8 +182,8 @@ body {
         }
 
         // call httpInput library
-        new httpIn(RED, node, this.url, this.method, this.callback);
-        new httpIn(RED, node, this.urlAuth, this.methodAuth, this.callbackAuth);
+        httpIn(RED, node, this.url, this.method, this.callback);
+        httpIn(RED, node, this.urlAuth, this.methodAuth, this.callbackAuth);
     }
     RED.nodes.registerType("Login", gdfindiWebapiLoginNode);
 }
