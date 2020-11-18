@@ -103,7 +103,7 @@ module.exports = function (RED) {
 </head>
 
 <body>
-    <a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/">Top</a>&nbsp;<br />
+    <a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a>&nbsp;<br />
     <div id="payload_div"></div>
     <div id="chart_div" style="width:100%;"></div>
 </body>
