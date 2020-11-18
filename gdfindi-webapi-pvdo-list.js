@@ -13,6 +13,7 @@ module.exports = function (RED) {
         this.url = "/PVDOreq";
         this.method = "get";
         this.urlAbort = "/PVDOabort"
+        this.methodAbort = "get";
 
         //callback function when url is accessed
         this.callback = function (req, res, done) {
@@ -48,7 +49,7 @@ module.exports = function (RED) {
             xhr.onreadystatechange = function (res) {
                 if (this.readyState == 4 && this.status == 200) {
                     var response = JSON.parse(this.responseText);
-                    var header = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/">Top</a><br/><br/>`;
+                    var header = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>`;
                     msg.payload = header + tableify(response);
                     // -------- http out -------- 
                     httpOut(RED, node, msg, done);
@@ -60,7 +61,7 @@ module.exports = function (RED) {
         }
 
         httpIn(RED, node, this.url, this.method, this.callback);
-        httpIn(RED, node, this.urlAbort, this.method, this.callbackAbort);
+        httpIn(RED, node, this.urlAbort, this.methodAbort, this.callbackAbort);
 
         // add codeBeforeReceivePayload
         node.on('input', function (msg, done) {
@@ -87,9 +88,9 @@ module.exports = function (RED) {
                     element.Status = `<p>${bufferStatus} (</p><a href=${link} target='_self'>ABORT</a><p>)</p>`;
                 }
             });
-
-            var html = tableify(response);
-            msg.payload = html;
+            
+            var header = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>`;
+            msg.payload = header + tableify(response);
 
             // -------- http out -------- 
             httpOut(RED, node, msg, done);
