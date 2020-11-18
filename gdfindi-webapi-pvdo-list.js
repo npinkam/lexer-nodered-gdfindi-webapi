@@ -62,7 +62,6 @@ module.exports = function (RED) {
         }
 
         httpIn(RED, node, this.url, this.method, this.callback);
-
         httpIn(RED, node, this.urlAbort, this.method, this.callbackAbort);
 
         // add codeBeforeReceivePayload
