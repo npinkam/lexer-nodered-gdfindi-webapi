@@ -8,9 +8,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "tableify": "*",
-    "xmlhttprequest": "*",
-    "client-oauth2": "*"
+    "tableify": "^1.1.0",
+    "xmlhttprequest": "^1.8.0",
+    "client-oauth2": "^4.3.3"
   },
 "node-red" : {
     "nodes": {
