@@ -18,6 +18,25 @@ module.exports = function (RED) {
             xhr.send();
             var response = JSON.parse(xhr.responseText);
 
+            function sleep(milliseconds) {
+                const date = Date.now();
+                let currentDate = null;
+                do {
+                    currentDate = Date.now();
+                } while (currentDate - date < milliseconds);
+            }
+
+            while (response.completed == false) {
+                xhr = new XMLHttpRequest();
+                xhr.open("GET", `https://precom.gdfindi.pro/api/v1/PVDO/${MiningID}/Results`, false);
+                xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
+                xhr.send();
+                response = JSON.parse(xhr.responseText);
+                sleep(1000);
+                xhr.abort();
+                xhr = {};
+            }
+
             // check if there is result
             if (response.results === undefined || response.results.length == 0) {
                 var html = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a>&nbsp;<br /><br />
