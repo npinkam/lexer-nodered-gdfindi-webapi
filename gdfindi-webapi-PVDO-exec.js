@@ -46,7 +46,8 @@ module.exports = function (RED) {
 
     // add codeBeforeReceivePayload
     node.on('input', function (msg, done) {
-      var payload = msg.payload;
+      var daytime = msg.payload.daytime;
+      var payload = msg.payload.data;
       var projectId = payload.id;
       // get initplans
       var hasProductionProcesses = payload.hasOwnProperty('productionProcesses');
@@ -56,6 +57,8 @@ module.exports = function (RED) {
           var hasRenderingCondition = payload.hasOwnProperty('renderingCondition');
           var lotsize = null;
           var processName = element.name;
+          var a = daytime[element.name].split(':');
+          var daytime_sec = (+a[0]) * 60 * 60 + (+a[1]);
           if(hasRenderingCondition == true){
             payload.renderingCondition.productionSchedules[0].orders.forEach(element => {
               if(element.product == processName){
@@ -66,7 +69,7 @@ module.exports = function (RED) {
           process.push({
             "productid": processName, //name of process
             "lotsize": lotsize, // lot size
-            "daytime":null, // Math.floor(Math.random() * 86400), //start time
+            "daytime":daytime_sec, // Math.floor(Math.random() * 86400), //start time
             "islot": false, //  Lot
             "line": null, // Line name
             "processid": null, // First process id

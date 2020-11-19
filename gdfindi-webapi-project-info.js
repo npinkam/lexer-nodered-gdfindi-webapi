@@ -191,7 +191,7 @@ module.exports = function (RED) {
 
     }
 
-    this.callbackExec = function (req, res, done)  {
+    this.callbackExec = function (req, res, done) {
       /** mandatory **/
       var msgid = RED.util.generateId();
       res._msgid = msgid;
@@ -199,7 +199,9 @@ module.exports = function (RED) {
 
       //get project information from context
       nodeContext = node.context().get('nodeContext');
-      var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: nodeContext };
+      var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
+      msg.payload.daytime = req.query;
+      msg.payload.data = nodeContext;
       node.send(msg);
     }
 
@@ -216,13 +218,37 @@ module.exports = function (RED) {
       xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
       xhr.send();
       var response = JSON.parse(xhr.responseText);
-      var html = tableify(response);
+      var body = tableify(response);
 
       var enableEditText = '';
       var enableDeleteText = '';
       var enableExecText = '';
       if (enableExec == true) {
-        enableExecText = `<a href="/exec?projectId=${projectId}">Execute Project on PVDO</a><br/>`;
+        var execTimeList = '';
+        var hasProductionProcesses = response.hasOwnProperty('productionProcesses');
+        if (hasProductionProcesses == true) {
+          response.productionProcesses.forEach(element => {
+            execTimeList += `
+            <label for="startProc">${element.name}:&nbsp;</label>
+            <input type="time" id="${element.name}" name="${element.name}"><br/>`
+          });
+          execTimeList += `<button type="submit">Execute</button>`;
+        } else {
+          execTimeList = '<p>No Production Process!</p>';
+        }
+      enableExecText = `<a id="execProject" href="#">Execute Project on PVDO</a><br/>
+        <form id="execForm" action="/exec" method="GET">
+          ${execTimeList}
+        </form>
+        <script type="text/javascript">
+        $(document).ready(function(){
+          $("#execForm").hide();
+          $("#execProject").on('click', function(){
+            $("#execForm").toggle();
+          });
+        });
+        </script>
+        `;
       }
       if (enableEdit == true) {
         enableEditText = `<a href="/edit?projectId=${projectId}">Edit Project</a><br/>`;
@@ -238,11 +264,19 @@ module.exports = function (RED) {
 `;
       }
 
-      var header = `<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+      var html = `<!DOCTYPE html>
+      <html>
+      <head>
+      <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+      </head>
+      <body>
       <a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>
-      ${enableExecText}${enableEditText}${enableDeleteText}`;
+      ${enableExecText}${enableEditText}${enableDeleteText}
+      ${body}
+      </body>
+      </html>`;
 
-      msg.payload = header + html;
+      msg.payload = html;
 
       // -------- http out -------- 
       httpOut(RED, node, msg, done);
