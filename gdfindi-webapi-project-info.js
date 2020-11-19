@@ -1,44 +1,51 @@
 module.exports = function (RED) {
-    var tableify = require('tableify');
-    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-    var httpOut = require('./lib/httpOut.js');
-    const httpIn = require('./lib/httpIn.js');
-    const wrapper = require('./lib/wrapper.js');
+  const tableify = require('tableify');
+  const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+  const httpOut = require('./lib/httpOut.js');
+  const httpIn = require('./lib/httpIn.js');
+  const wrapper = require('./lib/wrapper.js');
 
-    function gdfindiWebapiProjectInfoNode(config) {
-        RED.nodes.createNode(this, config);
-        var node = this;
+  function gdfindiWebapiProjectInfoNode(config) {
+    RED.nodes.createNode(this, config);
+    var node = this;
 
-        //properties field
-        this.enableEdit = config.enableEdit;
-        this.enableDelete = config.enableDelete;
+    //initiate store data in the node
+    var nodeContext = this.context().get('nodeContext') || {};
 
-        var enableEdit = this.enableEdit;
-        var enableDelete = this.enableDelete;
+    //properties field
+    this.enableEdit = config.enableEdit;
+    this.enableDelete = config.enableDelete;
+    this.enableExec = config.enableExec;
 
-        this.urlEdit = "/edit";
-        this.methodEdit = "get";
-        this.urlSubmitEdit = "/submitedit";
-        this.methodSubmitEdit = "post";
-        this.urlDel = "/del";
-        this.methodDel = "get";
+    var enableEdit = this.enableEdit;
+    var enableDelete = this.enableDelete;
+    var enableExec = this.enableExec;
 
-        this.callbackEdit = function (req, res, done) {
-            /** mandatory **/
-            var msgid = RED.util.generateId();
-            res._msgid = msgid;
-            /** mandatory **/
+    this.urlEdit = "/edit";
+    this.methodEdit = "get";
+    this.urlSubmitEdit = "/submitedit";
+    this.methodSubmitEdit = "post";
+    this.urlDel = "/del";
+    this.methodDel = "get";
+    this.urlExec = "/exec";
+    this.methodExec = "get";
 
-            //load current project to editor
-            var projectId = req.query.projectId;
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://precom.gdfindi.pro/api/v1/projects/" + projectId, false);
-            xhr.setRequestHeader('Authorization', req.cookies.authorization);
-            xhr.send();
-            var response = xhr.responseText;//JSON.parse(xhr.responseText);
-            //send response to ace editor
+    this.callbackEdit = function (req, res, done) {
+      /** mandatory **/
+      var msgid = RED.util.generateId();
+      res._msgid = msgid;
+      /** mandatory **/
 
-            var html = `
+      //load current project to editor
+      var projectId = req.query.projectId;
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "https://precom.gdfindi.pro/api/v1/projects/" + projectId, false);
+      xhr.setRequestHeader('Authorization', req.cookies.authorization);
+      xhr.send();
+      var response = xhr.responseText;//JSON.parse(xhr.responseText);
+      //send response to ace editor
+
+      var html = `
       <!DOCTYPE html>
       <html lang="en">
       
@@ -121,89 +128,107 @@ module.exports = function (RED) {
       </html>
       `;
 
-            var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
-            //msg.payload = response;
-            msg.payload = html;
-            httpOut(RED, node, msg, done);
-        }
+      var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
+      //msg.payload = response;
+      msg.payload = html;
+      httpOut(RED, node, msg, done);
+    }
 
-        this.callbackSubmitEdit = function (req, res, done) {
-            /** mandatory **/
-            var msgid = RED.util.generateId();
-            res._msgid = msgid;
-            /** mandatory **/
+    this.callbackSubmitEdit = function (req, res, done) {
+      /** mandatory **/
+      var msgid = RED.util.generateId();
+      res._msgid = msgid;
+      /** mandatory **/
 
-            //POST: structure of req.body: {projectId='', editor='info inside the ace editor textarea'}
-            var projectId = req.body.projectId;
-            var content = req.body.editor;
+      //POST: structure of req.body: {projectId='', editor='info inside the ace editor textarea'}
+      var projectId = req.body.projectId;
+      var content = req.body.editor;
 
-            var xhr = new XMLHttpRequest();
-            xhr.open("PUT", "https://precom.gdfindi.pro/api/v1/projects/" + projectId, true);
-            xhr.setRequestHeader('Authorization', req.cookies.authorization);
-            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
-            xhr.onreadystatechange = function (res) {
-                if (this.readyState == 4 && this.status == 200) {
-                    var response = JSON.parse(this.responseText);
-                    var header = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>`;
-                    msg.payload = header + tableify(response);
-                    // -------- http out -------- 
-                    httpOut(RED, node, msg, done);
-                } else if (this.readyState == 4 && this.status == 304) {
-                    var response = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>
+      var xhr = new XMLHttpRequest();
+      xhr.open("PUT", "https://precom.gdfindi.pro/api/v1/projects/" + projectId, true);
+      xhr.setRequestHeader('Authorization', req.cookies.authorization);
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
+      xhr.onreadystatechange = function (res) {
+        if (this.readyState == 4 && this.status == 200) {
+          var response = JSON.parse(this.responseText);
+          var header = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>`;
+          msg.payload = header + tableify(response);
+          // -------- http out -------- 
+          httpOut(RED, node, msg, done);
+        } else if (this.readyState == 4 && this.status == 304) {
+          var response = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>
                 <p>Identical information on Project#${projectId}. Nothing changes.</p>`;
-                    msg.payload = response;
-                    // -------- http out -------- 
-                    httpOut(RED, node, msg, done);
-                }
-            };
-            xhr.send(content);
+          msg.payload = response;
+          // -------- http out -------- 
+          httpOut(RED, node, msg, done);
         }
+      };
+      xhr.send(content);
+    }
 
-        this.callbackDel = function (req, res, done) {
-            /** mandatory **/
-            var msgid = RED.util.generateId();
-            res._msgid = msgid;
-            /** mandatory **/
+    this.callbackDel = function (req, res, done) {
+      /** mandatory **/
+      var msgid = RED.util.generateId();
+      res._msgid = msgid;
+      /** mandatory **/
 
-            var projectId = req.query.projectId;
-            var xhr = new XMLHttpRequest();
-            xhr.open("DELETE", "https://precom.gdfindi.pro/api/v1/projects/" + projectId, true);
-            xhr.setRequestHeader('Authorization', req.cookies.authorization);
-            xhr.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 204) {
-                    var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: "" };
-                    var html = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/><p>Delete #${projectId} successfully.</p>`
-                    msg.payload = html;
+      var projectId = req.query.projectId;
+      var xhr = new XMLHttpRequest();
+      xhr.open("DELETE", "https://precom.gdfindi.pro/api/v1/projects/" + projectId, true);
+      xhr.setRequestHeader('Authorization', req.cookies.authorization);
+      xhr.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 204) {
+          var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: "" };
+          var html = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/><p>Delete #${projectId} successfully.</p>`
+          msg.payload = html;
 
-                    /* -------- http out -------- */
-                    httpOut(RED, node, msg, done);
-                }
-            };
-            xhr.send();
-
+          /* -------- http out -------- */
+          httpOut(RED, node, msg, done);
         }
+      };
+      xhr.send();
 
-        httpIn(RED, node, this.urlEdit, this.methodEdit, this.callbackEdit);
-        httpIn(RED, node, this.urlSubmitEdit, this.methodSubmitEdit, this.callbackSubmitEdit);
-        httpIn(RED, node, this.urlDel, this.methodDel, this.callbackDel);
-        // add codeBeforeReceivePayload
-        node.on('input', function (msg, done) {
-            var projectId = msg.payload;
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://precom.gdfindi.pro/api/v1/projects/" + projectId, false);
-            xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
-            xhr.send();
-            var response = JSON.parse(xhr.responseText);
-            var html = tableify(response);
+    }
 
-            var enableEditText = '';
-            var enableDeleteText = '';
-            if (enableEdit == true) {
-                enableEditText = `<a href="/edit?projectId=${projectId}">Edit Project</a><br/>`;
-            }
-            if (enableDelete == true) {
-                enableDeleteText = `
+    this.callbackExec = function (req, res, done)  {
+      /** mandatory **/
+      var msgid = RED.util.generateId();
+      res._msgid = msgid;
+      /** mandatory **/
+
+      //get project information from context
+      nodeContext = node.context().get('nodeContext');
+      var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: nodeContext };
+      node.send(msg);
+    }
+
+    httpIn(RED, node, this.urlEdit, this.methodEdit, this.callbackEdit);
+    httpIn(RED, node, this.urlSubmitEdit, this.methodSubmitEdit, this.callbackSubmitEdit);
+    httpIn(RED, node, this.urlDel, this.methodDel, this.callbackDel);
+    httpIn(RED, node, this.urlExec, this.methodExec, this.callbackExec);
+
+    // add codeBeforeReceivePayload
+    node.on('input', function (msg, done) {
+      var projectId = msg.payload;
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "https://precom.gdfindi.pro/api/v1/projects/" + projectId, false);
+      xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
+      xhr.send();
+      var response = JSON.parse(xhr.responseText);
+      var html = tableify(response);
+
+      var enableEditText = '';
+      var enableDeleteText = '';
+      var enableExecText = '';
+      if (enableExec == true) {
+        enableExecText = `<a href="/exec?projectId=${projectId}">Execute Project on PVDO</a><br/>`;
+      }
+      if (enableEdit == true) {
+        enableEditText = `<a href="/edit?projectId=${projectId}">Edit Project</a><br/>`;
+      }
+      if (enableDelete == true) {
+        enableDeleteText = `
                 <a id="deleteProject" href="/del?projectId=${projectId}">Delete Project</a>
                 <script type="text/javascript">
                     $('#deleteProject').on('click', function () {
@@ -211,20 +236,21 @@ module.exports = function (RED) {
                     });
                 </script>
 `;
-            }
+      }
 
-            var header = `<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script><a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>${enableEditText}${enableDeleteText}`;
+      var header = `<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+      <a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>
+      ${enableExecText}${enableEditText}${enableDeleteText}`;
 
-            msg.payload = header + html;
+      msg.payload = header + html;
 
-            // -------- http out -------- 
-            httpOut(RED, node, msg, done);
+      // -------- http out -------- 
+      httpOut(RED, node, msg, done);
 
-            // -------- send raw data
-            msg.payload = {};
-            msg.payload = response;
-            node.send(msg);
-        });
-    }
-    RED.nodes.registerType("Project: Information", gdfindiWebapiProjectInfoNode);
+      // store project information in the node
+      nodeContext = response;
+      this.context().set('nodeContext', nodeContext);
+    });
+  }
+  RED.nodes.registerType("Project: Information", gdfindiWebapiProjectInfoNode);
 }
