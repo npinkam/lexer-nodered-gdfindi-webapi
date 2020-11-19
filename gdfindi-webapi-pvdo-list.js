@@ -82,7 +82,7 @@ module.exports = function (RED) {
                 var link = `/PVDOreq?MiningID=${buffer}`;
                 element.MiningID = "<a href=" + link + " target='_self'>" + buffer + "</a>";
 
-                if (element.Status != 'Complete') {
+                if (element.Status != 'Complete' && element.Status != 'Cancel') {
                     var bufferStatus = element.Status;
                     link = `/PVDOabort?MiningID=${buffer}`;
                     element.Status = `<p>${bufferStatus} (</p><a href=${link} target='_self'>ABORT</a><p>)</p>`;
