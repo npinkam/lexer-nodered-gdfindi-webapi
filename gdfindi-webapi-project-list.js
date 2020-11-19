@@ -1,62 +1,104 @@
 module.exports = function (RED) {
-    "use strict";
-    const tableify = require('tableify');
-    const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-    const httpIn = require('./lib/httpIn.js');
-    const httpOut = require('./lib/httpOut.js');
-    const wrapper = require('./lib/wrapper.js');
+  "use strict";
+  const tableify = require('tableify');
+  const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+  const httpIn = require('./lib/httpIn.js');
+  const httpOut = require('./lib/httpOut.js');
+  const wrapper = require('./lib/wrapper.js');
 
-    function gdfindiWebapiProjectListNode(config) {
-        RED.nodes.createNode(this, config);
-        var node = this;
+  function gdfindiWebapiProjectListNode(config) {
+    RED.nodes.createNode(this, config);
+    var node = this;
 
-        //properties field
-        this.enableCreate = config.enableCreate;
-        var enableCreate = this.enableCreate;
+    //properties field
+    this.enableCreate = config.enableCreate;
+    var enableCreate = this.enableCreate;
 
-        this.url = "/req";
-        this.method = "get";
-        this.urlCreate = "/create";
-        this.methodCreate = "get";
-        this.urlSubmitCreate = "/submitcreate";
-        this.methodSubmitCreate = "post";
+    this.urlProjectList = "/projectlist";
+    this.methodProjectList = "get";
+    this.url = "/req";
+    this.method = "get";
+    this.urlCreate = "/create";
+    this.methodCreate = "get";
+    this.urlSubmitCreate = "/submitcreate";
+    this.methodSubmitCreate = "post";
 
-        //callback function when url is accessed
-        this.callback = function (req, res) {
-            /** mandatory **/
-            var msgid = RED.util.generateId();
-            res._msgid = msgid;
-            /** mandatory **/
-            var projectId = req.query.projectId;
-            var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
+    //callback function when url is accessed
+    this.callbackProjectList = function (req, res, done) {
+      /** mandatory **/
+      var msgid = RED.util.generateId();
+      res._msgid = msgid;
+      /** mandatory **/
 
-            // -------- send raw data
-            msg.payload = projectId;
-            node.send(msg);
-        }
+      var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
 
-        this.callbackCreate = function (req, res, done) {
-            /** mandatory **/
-            var msgid = RED.util.generateId();
-            res._msgid = msgid;
-            /** mandatory **/
 
-            var content = {
-                "name": '',
-                "desc": '',
-                "extended": '',
-                "productionProcesses": '',
-                "layouts": '',
-                "stationActivities": '',
-                "transportationActivities": '',
-                "masters": '',
-                "assets": '',
-                "renderingCondition": '',
-                "latitude": '',
-                "longitude": ''
-            };
+      // add codeWhenReceivePayload
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "https://precom.gdfindi.pro/api/v1/projects/", false);
+      xhr.setRequestHeader('Authorization', req.cookies.authorization);
+      xhr.send();
+      var response = JSON.parse(xhr.responseText);
 
-            var html = `
+      var enableCreateText = '';
+      if (enableCreate == true) {
+        enableCreateText = `<a href="/create">Create New Project</a>`;
+      }
+
+      var header = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>${enableCreateText}`;
+
+      response.forEach(element => {
+        var buffer = element.id;
+        var link = `/req?projectId=${buffer}`;
+        element.id = "<a href=" + link + " target='_self'>" + buffer + "</a>";
+
+      });
+
+      var html = header + tableify(response);
+      msg.payload = '';
+      msg.payload = html;
+
+      /* -------- http out -------- */
+      httpOut(RED, node, msg, done);
+
+    }
+
+    //callback function when url is accessed
+    this.callback = function (req, res) {
+      /** mandatory **/
+      var msgid = RED.util.generateId();
+      res._msgid = msgid;
+      /** mandatory **/
+      var projectId = req.query.projectId;
+      var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
+
+      // -------- send raw data
+      msg.payload = projectId;
+      node.send(msg);
+    }
+
+    this.callbackCreate = function (req, res, done) {
+      /** mandatory **/
+      var msgid = RED.util.generateId();
+      res._msgid = msgid;
+      /** mandatory **/
+
+      var content = {
+        "name": '',
+        "desc": '',
+        "extended": '',
+        "productionProcesses": '',
+        "layouts": '',
+        "stationActivities": '',
+        "transportationActivities": '',
+        "masters": '',
+        "assets": '',
+        "renderingCondition": '',
+        "latitude": '',
+        "longitude": ''
+      };
+
+      var html = `
             <!DOCTYPE html>
             <html lang="en">
             
@@ -138,69 +180,51 @@ module.exports = function (RED) {
             </html>
             `;
 
-            var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
-            //msg.payload = response;
-            msg.payload = html;
-            httpOut(RED, node, msg, done);
-        }
-
-        this.callbackSubmitCreate = function (req, res, done) {
-            /** mandatory **/
-            var msgid = RED.util.generateId();
-            res._msgid = msgid;
-            /** mandatory **/
-      
-            //POST: structure of req.body: {projectId='', editor='info inside the ace editor textarea'}
-            var content = req.body.editor;
-            
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "https://precom.gdfindi.pro/api/v1/projects/", false);
-            xhr.setRequestHeader('Authorization', req.cookies.authorization);
-            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
-            xhr.send(content);
-
-            //response
-            var response = JSON.parse(xhr.responseText);
-            var header = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>`;
-            msg.payload = header + tableify(response);
-            // -------- http out -------- 
-            httpOut(RED, node, msg, done);
-          }
-
-        httpIn(RED, node, this.url, this.method, this.callback);
-        httpIn(RED, node, this.urlCreate, this.methodCreate, this.callbackCreate);
-        httpIn(RED, node, this.urlSubmitCreate, this.methodSubmitCreate, this.callbackSubmitCreate);
-
-        node.on('input', function (msg, done) {
-            // add codeWhenReceivePayload
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://precom.gdfindi.pro/api/v1/projects/", false);
-            xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
-            xhr.send();
-            var response = JSON.parse(xhr.responseText);
-
-            var enableCreateText = '';
-            if (enableCreate == true) {
-                enableCreateText = `<a href="/create">Create New Project</a>`;
-            }
-
-            var header = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>${enableCreateText}`;
-
-            response.forEach(element => {
-                var buffer = element.id;
-                var link = `/req?projectId=${buffer}`;
-                element.id = "<a href=" + link + " target='_self'>" + buffer + "</a>";
-
-            });
-
-            var html = header + tableify(response);
-            msg.payload = '';
-            msg.payload = html;
-
-            /* -------- http out -------- */
-            httpOut(RED, node, msg, done);
-        });
+      var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
+      //msg.payload = response;
+      msg.payload = html;
+      httpOut(RED, node, msg, done);
     }
-    RED.nodes.registerType("Project: List", gdfindiWebapiProjectListNode);
+
+    this.callbackSubmitCreate = function (req, res, done) {
+      /** mandatory **/
+      var msgid = RED.util.generateId();
+      res._msgid = msgid;
+      /** mandatory **/
+
+      //POST: structure of req.body: {projectId='', editor='info inside the ace editor textarea'}
+      var content = req.body.editor;
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "https://precom.gdfindi.pro/api/v1/projects/", false);
+      xhr.setRequestHeader('Authorization', req.cookies.authorization);
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
+      xhr.send(content);
+
+      //response
+      var response = JSON.parse(xhr.responseText);
+      var header = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>`;
+      msg.payload = header + tableify(response);
+      // -------- http out -------- 
+      httpOut(RED, node, msg, done);
+    }
+
+    httpIn(RED, node, this.urlProjectList, this.methodProjectList, this.callbackProjectList);
+    httpIn(RED, node, this.url, this.method, this.callback);
+    httpIn(RED, node, this.urlCreate, this.methodCreate, this.callbackCreate);
+    httpIn(RED, node, this.urlSubmitCreate, this.methodSubmitCreate, this.callbackSubmitCreate);
+
+    node.on('input', function (msg, done) {
+      // redirect to /projectlist
+      var html = `<script type="text/javascript">window.location.replace("/projectlist");</script>`
+
+      msg.payload = '';
+      msg.payload = html;
+      
+      /* -------- http out -------- */
+      httpOut(RED, node, msg, done);
+    });
+  }
+  RED.nodes.registerType("Project: List", gdfindiWebapiProjectListNode);
 }
