@@ -5,6 +5,7 @@ module.exports = function (RED) {
   const httpIn = require('./lib/httpIn.js');
   const httpOut = require('./lib/httpOut.js');
   const wrapper = require('./lib/wrapper.js');
+  const utility = require('./lib/utility.js');
 
   function gdfindiWebapiProjectListNode(config) {
     RED.nodes.createNode(this, config);
@@ -40,12 +41,18 @@ module.exports = function (RED) {
       xhr.send();
       var response = JSON.parse(xhr.responseText);
 
+      var title = 'GD.findi Project List'
+      var library = `
+      <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.css">
+      <script src="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+      `;
+      var style = '';
       var enableCreateText = '';
       if (enableCreate == true) {
         enableCreateText = `<a href="/create">Create New Project</a>`;
       }
-
-      var header = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>${enableCreateText}`;
+      var header = enableCreateText;
 
       response.forEach(element => {
         var buffer = element.id;
@@ -54,9 +61,31 @@ module.exports = function (RED) {
 
       });
 
-      var html = header + tableify(response);
+      var body = `
+      <div class="container">
+        <table id="table">
+          <thead>
+            <tr>
+              <th data-field="id">Project ID</th>
+              <th data-field="name">Project Name</th>
+              <th data-field="owner">Owner</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+      `;
+      var script = `
+      var $table = $('#table');
+      var mydata = ${JSON.stringify(response)};
+      $(function(){
+        $("#table").bootstrapTable({
+          data: mydata
+        });
+      });
+      `;
+
       msg.payload = '';
-      msg.payload = html;
+      msg.payload = utility.htmlTemplate(title, library, style, header, body, script);
 
       /* -------- http out -------- */
       httpOut(RED, node, msg, done);
@@ -98,91 +127,74 @@ module.exports = function (RED) {
         "longitude": ''
       };
 
-      var html = `
-            <!DOCTYPE html>
-            <html lang="en">
-            
-            <head>
-            <!-- Latest compiled and minified CSS -->
-            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-            
-            <!-- Optional theme -->
-            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-            
-            <!-- Latest compiled and minified JavaScript -->
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
-                <style type="text/css" media="screen">
-                .title {
-                    font-size: 1.67em;
-                    font-weight: bold;
-                    text-align: center;
-                  }
-                  #editor {
-                    height: 75vh;
-                    width: 100%;
-                  }
-                  textarea[name="editor"] {
-                    display: none;
-                  }
-                  
-                  .as-console-wrapper {
-                    display: none !important;
-                  }
-            </style>
-            </head>
-            
-            <body>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.6.8/beautify.js"></script>
-            <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" rel="stylesheet"/>
-            <a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>
-                <form id="edit" action=/submitcreate method="post">
-                  <div class="title">Create New Project</div>
-                  <textarea name="editor">${JSON.stringify(content)}</textarea>
-                  <div id="editor"></div>
-                  <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
-                <script>
-                var editor = ace.edit('editor');
-                var txtAra = document.querySelector('textarea[name="editor"]');
-                var jsbOpts = {
-                  indent_size : 2
-                };
-                
-                // Setup
-                editor.setTheme("ace/theme/monokai");
-                editor.getSession().setMode("ace/mode/json");
-                syncEditor();
-                
-                // Main Logic
-                formatCode();
-            
-                //when hit submit form
-                $('#edit').submit(function(event){
-                  commitChanges();
-                });
-                
-                // Functions
-                function syncEditor() {
-                  editor.getSession().setValue(txtAra.value);
-                }
-                function commitChanges() {
-                  txtAra.value = editor.getSession().getValue();
-                }
-                function formatCode() {
-                  var session = editor.getSession();
-                  session.setValue(js_beautify(session.getValue(), jsbOpts));
-                }
-                </script>
-            </body>
-            
-            </html>
-            `;
-
+      var title = 'GD.findi Create Project';
+      var library = `
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.6.8/beautify.js"></script>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" rel="stylesheet"/>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+      `;
+      var style = `
+      .title {
+        font-size: 1.67em;
+        font-weight: bold;
+        text-align: center;
+      }
+      #editor {
+        height: 75vh;
+        width: 100%;
+      }
+      textarea[name="editor"] {
+        display: none;
+      }
+      
+      .as-console-wrapper {
+        display: none !important;
+      }
+      `;
+      var header = ``;
+      var body = `
+      <form id="edit" action=/submitcreate method="post">
+      <div class="title">Create New Project</div>
+      <textarea name="editor">${JSON.stringify(content)}</textarea>
+      <div id="editor"></div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+      `;
+      var script = `
+      var editor = ace.edit('editor');
+      var txtAra = document.querySelector('textarea[name="editor"]');
+      var jsbOpts = {
+        indent_size : 2
+      };
+      
+      // Setup
+      editor.setTheme("ace/theme/monokai");
+      editor.getSession().setMode("ace/mode/json");
+      syncEditor();
+      
+      // Main Logic
+      formatCode();
+  
+      //when hit submit form
+      $('#edit').submit(function(event){
+        commitChanges();
+      });
+      
+      // Functions
+      function syncEditor() {
+        editor.getSession().setValue(txtAra.value);
+      }
+      function commitChanges() {
+        txtAra.value = editor.getSession().getValue();
+      }
+      function formatCode() {
+        var session = editor.getSession();
+        session.setValue(js_beautify(session.getValue(), jsbOpts));
+      }
+      `;
       var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
       //msg.payload = response;
-      msg.payload = html;
+      msg.payload = utility.htmlTemplate(title, library, style, header, body, script);
       httpOut(RED, node, msg, done);
     }
 
@@ -204,8 +216,45 @@ module.exports = function (RED) {
 
       //response
       var response = JSON.parse(xhr.responseText);
-      var header = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>`;
-      msg.payload = header + tableify(response);
+      var arrayResponse = [];
+      arrayResponse.push(response);
+      response = JSON.stringify(arrayResponse);
+
+      var title = `GD.findi Create Project`
+      var library = `
+      <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.css">
+      <script src="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+      `;
+      var style = ``;
+      var header = ``;
+      var body = `
+      <div class="container">
+      <table id="table">
+        <thead>
+          <tr>
+            <th data-field="id">Project ID</th>
+            <th data-field="name">Project Name</th>
+            <th data-field="owner">Owner</th>
+            <th data-field="access">Access</th>
+            <th data-field="updated">Update</th>
+            <th data-field="version">Version</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+      `;
+      var script = `
+      var $table = $('#table');
+      var mydata = ${response};
+      $(function(){
+        $("#table").bootstrapTable({
+          data: mydata
+        });
+      });
+      `;
+
+      msg.payload = utility.htmlTemplate(title, library, style, header, body, script)
       // -------- http out -------- 
       httpOut(RED, node, msg, done);
     }
@@ -221,7 +270,7 @@ module.exports = function (RED) {
 
       msg.payload = '';
       msg.payload = html;
-      
+
       /* -------- http out -------- */
       httpOut(RED, node, msg, done);
     });
