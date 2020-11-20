@@ -4,6 +4,7 @@ module.exports = function (RED) {
   const httpOut = require('./lib/httpOut.js');
   const httpIn = require('./lib/httpIn.js');
   const wrapper = require('./lib/wrapper.js');
+  const utility = require('./lib/utility.js');
 
   function gdfindiWebapiProjectInfoNode(config) {
     RED.nodes.createNode(this, config);
@@ -43,94 +44,76 @@ module.exports = function (RED) {
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
       xhr.send();
       var response = xhr.responseText;//JSON.parse(xhr.responseText);
-      //send response to ace editor
 
-      var html = `
-      <!DOCTYPE html>
-      <html lang="en">
-      
-      <head>
-      <!-- Latest compiled and minified CSS -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-      
-      <!-- Optional theme -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-      
-      <!-- Latest compiled and minified JavaScript -->
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
-          <style type="text/css" media="screen">
-          .title {
-              font-size: 1.67em;
-              font-weight: bold;
-              text-align: center;
-            }
-            #editor {
-              height: 75vh;
-              width: 100%;
-            }
-            textarea[name="editor"] {
-              display: none;
-            }
-            
-            .as-console-wrapper {
-              display: none !important;
-            }
-      </style>
-      </head>
-      
-      <body>
+      var title = 'GD.findi Edit Project';
+      var library = `
       <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.6.8/beautify.js"></script>
       <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" rel="stylesheet"/>
-      <a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/">Top</a><br/><br/>
-          <form id="edit" action=/submitedit method="post">
-            <div class="title">Project#${projectId} Information</div>
-            <input type="hidden" id="projectId" name="projectId" value=${projectId}>
-            <textarea name="editor">${response}</textarea>
-            <div id="editor"></div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </form>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
-          <script>
-          var editor = ace.edit('editor');
-          var txtAra = document.querySelector('textarea[name="editor"]');
-          var jsbOpts = {
-            indent_size : 2
-          };
-          
-          // Setup
-          editor.setTheme("ace/theme/monokai");
-          editor.getSession().setMode("ace/mode/json");
-          syncEditor();
-          
-          // Main Logic
-          formatCode();
-      
-          //when hit submit form
-          $('#edit').submit(function(event){
-            commitChanges();
-          });
-          
-          // Functions
-          function syncEditor() {
-            editor.getSession().setValue(txtAra.value);
-          }
-          function commitChanges() {
-            txtAra.value = editor.getSession().getValue();
-          }
-          function formatCode() {
-            var session = editor.getSession();
-            session.setValue(js_beautify(session.getValue(), jsbOpts));
-          }
-          </script>
-      </body>
-      
-      </html>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
       `;
-
+      var style = `
+      .title {
+        font-size: 1.67em;
+        font-weight: bold;
+        text-align: center;
+      }
+      #editor {
+        height: 75vh;
+        width: 100%;
+      }
+      textarea[name="editor"] {
+        display: none;
+      }
+      
+      .as-console-wrapper {
+        display: none !important;
+      }
+      `;
+      var header = ``;
+      var body = `
+      <form id="edit" action=/submitedit method="post">
+      <div class="title">Project#${projectId} Information</div>
+      <input type="hidden" id="projectId" name="projectId" value=${projectId}>
+      <textarea name="editor">${response}</textarea>
+      <div id="editor"></div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+      `;
+      var script = `
+      var editor = ace.edit('editor');
+      var txtAra = document.querySelector('textarea[name="editor"]');
+      var jsbOpts = {
+        indent_size : 2
+      };
+      
+      // Setup
+      editor.setTheme("ace/theme/monokai");
+      editor.getSession().setMode("ace/mode/json");
+      syncEditor();
+      
+      // Main Logic
+      formatCode();
+  
+      //when hit submit form
+      $('#edit').submit(function(event){
+        commitChanges();
+      });
+      
+      // Functions
+      function syncEditor() {
+        editor.getSession().setValue(txtAra.value);
+      }
+      function commitChanges() {
+        txtAra.value = editor.getSession().getValue();
+      }
+      function formatCode() {
+        var session = editor.getSession();
+        session.setValue(js_beautify(session.getValue(), jsbOpts));
+      }
+      `;
       var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
       //msg.payload = response;
-      msg.payload = html;
+      msg.payload = utility.htmlTemplate(title, library, style, header, body, script);
       httpOut(RED, node, msg, done);
     }
 
@@ -151,15 +134,59 @@ module.exports = function (RED) {
       var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
       xhr.onreadystatechange = function (res) {
         if (this.readyState == 4 && this.status == 200) {
-          var response = JSON.parse(this.responseText);
-          var header = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>`;
-          msg.payload = header + tableify(response);
+          var response = JSON.parse(xhr.responseText);
+          var arrayResponse = [];
+          arrayResponse.push(response);
+          response = JSON.stringify(arrayResponse);
+
+          var title = `GD.findi Edit Project`
+          var library = `
+          <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.css">
+          <script src="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+          `;
+          var style = ``;
+          var header = ``;
+          var body = `
+          <div class="container">
+          <table id="table">
+            <thead>
+              <tr>
+                <th data-field="id">Project ID</th>
+                <th data-field="name">Project Name</th>
+                <th data-field="owner">Owner</th>
+                <th data-field="access">Access</th>
+                <th data-field="updated">Update</th>
+                <th data-field="version">Version</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+          `;
+          var script = `
+          var $table = $('#table');
+          var mydata = ${response};
+          $(function(){
+            $("#table").bootstrapTable({
+              data: mydata
+            });
+          });
+          `;
+
+          msg.payload = utility.htmlTemplate(title, library, style, header, body, script)
           // -------- http out -------- 
           httpOut(RED, node, msg, done);
         } else if (this.readyState == 4 && this.status == 304) {
-          var response = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>
-                <p>Identical information on Project#${projectId}. Nothing changes.</p>`;
-          msg.payload = response;
+
+          var title = `GD.findi Edit Project`
+          var library = ``;
+          var style = ``;
+          var header = ``;
+          var body = `<p>Identical information on Project#${projectId}. Nothing changes.</p>`;
+          var script = ``;
+
+          msg.payload = utility.htmlTemplate(title, library, style, header, body, script)
+
           // -------- http out -------- 
           httpOut(RED, node, msg, done);
         }
@@ -179,9 +206,16 @@ module.exports = function (RED) {
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
       xhr.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 204) {
+
+          var title = `GD.findi Delete Project`
+          var library = ``;
+          var style = ``;
+          var header = ``;
+          var body = `<p>Delete #${projectId} successfully.</p>`;
+          var script = ``;
+
           var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: "" };
-          var html = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/><p>Delete #${projectId} successfully.</p>`
-          msg.payload = html;
+          msg.payload = utility.htmlTemplate(title, library, style, header, body, script)
 
           /* -------- http out -------- */
           httpOut(RED, node, msg, done);
@@ -218,12 +252,15 @@ module.exports = function (RED) {
       xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
       xhr.send();
       var response = JSON.parse(xhr.responseText);
-      var body = tableify(response);
+      var html = tableify(response);
 
       var enableEditText = '';
       var enableDeleteText = '';
-      var enableExecText = '';
+      var enableExecTextHeader = '';
+      var enableExecTextBody = '';
       if (enableExec == true) {
+        enableExecTextHeader = `<a id="execProject" href="#">Execute Project</a>`
+
         var execTimeList = '';
         var hasProductionProcesses = response.hasOwnProperty('productionProcesses');
         if (hasProductionProcesses == true) {
@@ -232,12 +269,14 @@ module.exports = function (RED) {
             <label for="startProc">${element.name}:&nbsp;</label>
             <input type="time" id="${element.name}" name="${element.name}"><br/>`
           });
-          execTimeList += `<button type="submit">Execute</button>`;
+          execTimeList += `<button type="submit" class="btn btn-primary">Execute</button>`;
         } else {
           execTimeList = '<p>No Production Process!</p>';
         }
-      enableExecText = `<a id="execProject" href="#">Execute Project on PVDO</a><br/>
-        <form id="execForm" action="/exec" method="GET">
+
+
+
+        enableExecTextBody = `<form id="execForm" action="/exec" method="GET">
           ${execTimeList}
         </form>
         <script type="text/javascript">
@@ -251,7 +290,7 @@ module.exports = function (RED) {
         `;
       }
       if (enableEdit == true) {
-        enableEditText = `<a href="/edit?projectId=${projectId}">Edit Project</a><br/>`;
+        enableEditText = `<a href="/edit?projectId=${projectId}">Edit Project</a>`;
       }
       if (enableDelete == true) {
         enableDeleteText = `
@@ -264,19 +303,18 @@ module.exports = function (RED) {
 `;
       }
 
-      var html = `<!DOCTYPE html>
-      <html>
-      <head>
-      <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-      </head>
-      <body>
-      <a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a><br/><br/>
-      ${enableExecText}${enableEditText}${enableDeleteText}
-      ${body}
-      </body>
-      </html>`;
+      var title = `GD.findi Project#${projectId} Information`
+      var library = ``;
+      var style = ``;
+      var header = `${enableExecTextHeader}${enableEditText}${enableDeleteText}`;
+      var body = `
+      ${enableExecTextBody}
+      ${html}
+      `;
+      var script = ``;
 
-      msg.payload = html;
+      msg.payload = '';
+      msg.payload = utility.htmlTemplate(title, library, style, header, body, script)
 
       // -------- http out -------- 
       httpOut(RED, node, msg, done);
