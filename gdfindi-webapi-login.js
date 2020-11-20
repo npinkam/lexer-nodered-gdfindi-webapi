@@ -4,6 +4,7 @@ module.exports = function (RED) {
     const httpOut = require('./lib/httpOut.js');
     const wrapper = require('./lib/wrapper.js');
     const ClientOAuth2 = require('client-oauth2');
+    const utility = require('./lib/utility.js');
 
     function gdfindiWebapiLoginNode(config) {
         RED.nodes.createNode(this, config);
@@ -21,132 +22,48 @@ module.exports = function (RED) {
             var msgid = RED.util.generateId();
             res._msgid = msgid;
 
-            var html = `
-<head>
-<style type="text/css">
-/**
- 01/28/2016
-    This pen is years old, and watching at the code after all
-    those years made me fall from my chair, so I:
-    - changed all IDs to classes
-    - converted all units to pixels and em units
-    - changed all global elements to classes or children of
-    .login
-    - cleaned the syntax to be more consistent
-    - added a lot of spaces that I so hard tried to avoid
-    a few years ago
-    (because it's cool to not use them)
-    - and probably something else that I can't remember anymore
-    
-    I sticked to the same philosophy, meaning:
-    - the design is almost the same
-    - only pure HTML and CSS
-    - no frameworks, preprocessors or resets
-    /
-
-/ 'Open Sans' font from Google Fonts /
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
-
-body {
-    background: #456;
-    font-family: 'Open Sans', sans-serif;
+            var title = `Lexer Customer Login`;
+            var library = '';
+            var style = `
+.login-form {
+    width: 340px;
+    margin: 50px auto;
 }
-
-.login {
-    width: 400px;
-    margin: 16px auto;
-    font-size: 16px;
+.login-form form {
+    margin-bottom: 15px;
+    background: #f7f7f7;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    padding: 30px;
 }
-
-/ Reset top and bottom margins from certain elements /
-.login-header,
-.login p {
-    margin-top: 0;
-    margin-bottom: 0;
+.login-form h2 {
+    margin: 0 0 15px;
 }
-
-/ The triangle form is achieved by a CSS hack /
-.login-triangle {
-    width: 0;
-    margin-right: auto;
-    margin-left: auto;
-    border: 12px solid transparent;
-    border-bottom-color: #28d;
+.form-control, .btn {
+    min-height: 38px;
+    border-radius: 2px;
 }
-
-.login-header {
-    background: #28d;
-    padding: 20px;
-    font-size: 1.4em;
-    font-weight: normal;
-    text-align: center;
-    text-transform: uppercase;
-    color: #fff;
-}
-
-.login-container {
-    background: #ebebeb;
-    padding: 12px;
-}
-
-/ Every row inside .login-container is defined with p tags /
-.login p {
-    padding: 12px;
-}
-
-.login input {
-    box-sizing: border-box;
-    display: block;
-    width: 100%;
-    border-width: 1px;
-    border-style: solid;
-    padding: 16px;
-    outline: 0;
-    font-family: inherit;
-    font-size: 0.95em;
-}
-
-.login input[type="email"],
-.login input[type="password"] {
-    background: #fff;
-    border-color: #bbb;
-    color: #555;
-}
-
-/ Text fields' focus effect /
-.login input[type="email"]:focus,
-.login input[type="password"]:focus {
-    border-color: #888;
-}
-
-.login input[type="submit"] {
-    background: #28d;
-    border-color: transparent;
-    color: #fff;
-    cursor: pointer;
-}
-
-.login input[type="submit"]:hover {
-    background: #17c;
-}
-
-/ Buttons' focus effect */
-.login input[type="submit"]:focus {
-    border-color: #05a;
-}
-</style>
-</head>
-
-<div class="login">
-    <div class="login-triangle"></div>
-    <h2 class="login-header">Log in</h2>
-    <form class="login-container" action="/auth" method="POST">
-    <p><input name="username" type="text" placeholder="Username"></p>
-    <p><input name="password" type="password" placeholder="Password"></p>
-    <p><input type="submit" value="Log in"></p>
-    </form>
+.btn {        
+    font-size: 15px;
+    font-weight: bold;
+}`;
+            var body = `
+<div class="login-form">
+<form action="/auth" method="post">
+    <h2 class="text-center">Log in</h2>       
+    <div class="form-group">
+        <input type="text" name="username" class="form-control" placeholder="Username" required="required">
+    </div>
+    <div class="form-group">
+        <input type="password" name="password" class="form-control" placeholder="Password" required="required">
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary btn-block">Log in</button>
+    </div>     
+</form>
 </div>
-`;
+            `
+            var script = '';
+            var html = utility.htmlTemplate(title, library, style, false, body, script);
             var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: html };
             httpOut(RED, node, msg, done)
         }
