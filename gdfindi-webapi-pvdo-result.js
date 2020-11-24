@@ -1,7 +1,7 @@
 module.exports = function (RED) {
-    var tableify = require('tableify');
-    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-    var httpOut = require('./lib/httpOut.js');
+    const tableify = require('tableify');
+    const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    const httpOut = require('./lib/httpOut.js');
     const httpIn = require('./lib/httpIn.js');
     const wrapper = require('./lib/wrapper.js');
 
