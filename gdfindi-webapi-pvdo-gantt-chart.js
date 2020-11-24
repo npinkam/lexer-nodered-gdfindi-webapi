@@ -13,6 +13,12 @@ module.exports = function (RED) {
         // add codeBeforeReceivePayload
         node.on('input', function (msg, done) {
             var MiningID = msg.payload.MiningID;
+            //specify header
+            if(msg.payload.hasOwnProperty('pvdo')){
+                var header = `<a href="/pvdolist">PVDO List</a>`;
+            }else{
+                var header = `<a href="/projectlist">Project List</a>`;
+            }
             var xhr = new XMLHttpRequest();
             xhr.open("GET", `https://precom.gdfindi.pro/api/v1/PVDO/${MiningID}/Results`, false);
             xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
@@ -40,10 +46,19 @@ module.exports = function (RED) {
 
             // check if there is result
             if (response.results === undefined || response.results.length == 0) {
-                var html = `<a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a>&nbsp;<br /><br />
-                <p>Data is already retrieved!</p>`;
-                msg.payload = html;
+
+                var title = `PVDO Result`;
+                var library = ``;
+                var style = ``;
+                var body = `<p>Data is already retrieved!</p>`;
+                var script = ``;
+
+                msg.payload = '';
+                msg.payload = utility.htmlTemplate(title, library, style, header, body, script);
+
+                
                 httpOut(RED, node, msg, done);
+
             } else {
                 // get gantt chart element
                 var result = response.results[0].statisticalResult.process;
@@ -79,7 +94,6 @@ module.exports = function (RED) {
                 var style = `
                 
                 `;
-                var header = ``;
                 var body = `
                 <div id="chart_div" style="width:100%;"></div>
                 `;
