@@ -122,7 +122,7 @@ module.exports = function (RED) {
         display: none !important;
       }
       `;
-      var header = ``;
+      var header = `<a href="/projectlist">Project List</a>`;
       var body = `
       <form id="edit" action=/submitexec method="post">
       <div class="title">Project#${projectId} Parameters for PVDO</div>

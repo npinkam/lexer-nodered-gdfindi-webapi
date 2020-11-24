@@ -52,7 +52,7 @@ module.exports = function (RED) {
       if (enableCreate == true) {
         enableCreateText = `<a href="/create">Create New Project</a>`;
       }
-      var header = enableCreateText;
+      var header = `<a href="/projectlist">Project List</a>${enableCreateText}`;
 
       response.forEach(element => {
         var buffer = element.id;
@@ -151,7 +151,7 @@ module.exports = function (RED) {
         display: none !important;
       }
       `;
-      var header = ``;
+      var header = `<a href="/projectlist">Project List</a>`;
       var body = `
       <form id="edit" action=/submitcreate method="post">
       <div class="title">Create New Project</div>
@@ -227,7 +227,7 @@ module.exports = function (RED) {
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
       `;
       var style = ``;
-      var header = ``;
+      var header = `<a href="/projectlist">Project List</a>`;
       var body = `
       <div class="container">
       <table id="table">
