@@ -98,7 +98,7 @@ module.exports = function (RED) {
         "mode": "Mining" // Rendering output mode. See below.
       };
 
-      var title = 'GD.findi Edit Project';
+      var title = 'GD.findi Execute Project';
       var library = `
       <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.6.8/beautify.js"></script>
       <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" rel="stylesheet"/>
