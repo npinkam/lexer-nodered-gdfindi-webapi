@@ -304,14 +304,72 @@ module.exports = function (RED) {
       }
 
       var title = `GD.findi Project#${projectId} Information`
-      var library = ``;
+      var library = `
+      <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.css">
+      <script src="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+      `;
       var style = ``;
       var header = `<a href="/projectlist">Project List</a>${enableExecTextHeader}${enableEditText}${enableDeleteText}`;
+
+      //extract important information from response json
+      var table_info = response.productionProcesses;
+
       var body = `
       ${enableExecTextBody}
-      ${html}
+      <div class="container">
+      <table id="table_desc" class="table">
+          <tr>
+            <th>ID</th>
+            <td>${response.id}</td>
+          </tr>
+          <tr>
+            <th>Name</th>
+            <td>${response.name}</td>
+          </tr>
+          <tr>
+            <th>Description</th>
+            <td>${response.desc}</td>
+          </tr>
+          <tr>
+            <th>Owner</th>
+            <td>${response.owner}</td>
+          </tr>
+          <tr>
+          <th>Access</th>
+          <td>${response.access}</td>
+        </tr>
+        <tr>
+        <th>Updated</th>
+        <td>${response.updated}</td>
+      </tr>
+      <tr>
+      <th>Version</th>
+      <td>${response.version}</td>
+    </tr>
+      </table>
+    </div>
+
+    <div class="container">
+    <table id="table">
+    <thead>
+      <tr>
+        <th data-field="id">ID</th>
+        <th data-field="name">Product Name</th>
+      </tr>
+    </thead>
+  </table>
+    </div>
       `;
-      var script = ``;
+      var script = `
+      var $table = $('#table');
+      var mydata = ${JSON.stringify(table_info)};
+      $(function(){
+        $("#table").bootstrapTable({
+          data: mydata
+        });
+      });
+      `;
 
       msg.payload = '';
       msg.payload = utility.htmlTemplate(title, library, style, header, body, script)
