@@ -1,9 +1,10 @@
 module.exports = function (RED) {
-    var tableify = require('tableify');
-    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-    var httpOut = require('./lib/httpOut.js');
+    const tableify = require('tableify');
+    const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    const httpOut = require('./lib/httpOut.js');
     const httpIn = require('./lib/httpIn.js');
     const wrapper = require('./lib/wrapper.js');
+    const utility = require('./lib/utility.js');
 
     function gdfindiWebapiPVDOGanttChartNode(config) {
         RED.nodes.createNode(this, config);
@@ -69,20 +70,21 @@ module.exports = function (RED) {
                 }
                 var payload = JSON.stringify(arrayToHtml);
                 //google charts
-                var html = `
-<html>
 
-<head>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
-    <style>
-        body {
-            font-family: 'Roboto';
-        }
-    </style>
-
-    <script type="text/javascript">
-        google.charts.load('current', { 'packages': ['gantt'] });
+                var title = `GD.findi Gantt Chart`
+                var library = `
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+`;
+                var style = `
+                
+                `;
+                var header = ``;
+                var body = `
+                <div id="chart_div" style="width:100%;"></div>
+                `;
+                var script = `
+                google.charts.load('current', { 'packages': ['gantt'] });
         google.charts.setOnLoadCallback(drawChart);
         
         function drawChart() {
@@ -124,21 +126,9 @@ module.exports = function (RED) {
 
             chart.draw(otherData, options);
         }
-        
-    </script>
-</head>
+                `;
 
-<body>
-    <a href="javascript:history.back()">Go Back</a>&nbsp;<a href="/lexerproject">Top</a>&nbsp;<br />
-    <div id="payload_div"></div>
-    <div id="chart_div" style="width:100%;"></div>
-</body>
-
-</html>
-`;
-
-                msg.payload = html;
-
+                msg.payload = utility.htmlTemplate(title, library, style, header, body, script)
                 httpOut(RED, node, msg, done);
             }
 
