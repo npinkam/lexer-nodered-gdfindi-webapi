@@ -19,7 +19,8 @@
         "Project: Informatiion": "gdfindi-webapi-project-info.js",
         "PVDO: List": "gdfindi-webapi-pvdo-list.js",
         "PVDO: Request Rendering": "gdfindi-webapi-pvdo-exec.js",
-        "PVDO: Gantt Chart": "gdfindi-webapi-pvdo-gantt-chart.js"
+        "PVDO: Gantt Chart": "gdfindi-webapi-pvdo-gantt-chart.js",
+        "PVDO: Workload Timeline": "gdfindi-webapi-pvdo-workload-timeline.js"
     }
 }
 }
