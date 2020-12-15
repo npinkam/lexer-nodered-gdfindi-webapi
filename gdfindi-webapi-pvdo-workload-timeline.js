@@ -13,6 +13,7 @@ module.exports = function (RED) {
         // add codeBeforeReceivePayload
         node.on('input', function (msg, done) {
             var MiningID = msg.payload.MiningID;
+            var projectId = msg.payload.projectId;
             //specify header
             if (msg.payload.hasOwnProperty('pvdo')) {
                 var header = `<a href="/pvdolist">PVDO List</a>`;
@@ -127,6 +128,67 @@ module.exports = function (RED) {
 
                 var payload = JSON.stringify(arrayToHtml);
                 //google charts
+
+
+                //json
+                var workloadJSON = {
+                    "@class": "Application",
+                    "uuid": "e27275a4-bf01-488e-a878-22e279173113", 
+                    "name": "Workload Chart",
+                    "description": "A workload chart in JSON format.",
+                    "token": "73113",
+                    "events": [
+                      {
+                        "@id": projectId, 
+                        "eventId": "updatedText",
+                        "name": "Workload Chart",
+                        "description": "A workload chart in JSON format.",
+                        "dataFormat": {
+                          "dataObject": {
+                            "$ref": "/definition/Object"
+                          },
+                          "Object": {
+                            "type": "object",
+                            "properties": {
+                              "station": {
+                                "$ref": "#/definition/Station"
+                              }
+                            }
+                          },
+                          "Station": {
+                            "type": "object",
+                            "properties": {
+                              "text": {
+                                "name": "string"
+                              },
+                              "works": {
+                                "$ref": "#/definition/Work"
+                              }
+                            }
+                          },
+                          "Work": {
+                            "type": "object",
+                            "properties": {
+                              "WorkType": {
+                                "type": "string"
+                              },
+                              "Time": {
+                                "type": "number"
+                              },
+                              "ProductName": {
+                                "type": "string"
+                              },
+                              "Count": {
+                                "type": "number"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "functions": [],
+                    "endpoints": []
+                  }
 
                 var title = `GD.findi Gantt Chart`
                 var library = `
