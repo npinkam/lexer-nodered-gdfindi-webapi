@@ -63,6 +63,11 @@ module.exports = function (RED) {
                 // get gantt chart element
                 var result = response.results[0].statisticalResult.process;
 
+                //send response to debug node
+                msg.payload = response.results[0];
+                node.send(msg)
+                //msg.payload = '';
+/*
                 //convert result from pvdo to a proper json
                 var key = result[0];
                 result.shift();
@@ -143,7 +148,7 @@ module.exports = function (RED) {
                 `;
 
                 msg.payload = utility.htmlTemplate(title, library, style, header, body, script)
-                httpOut(RED, node, msg, done);
+                httpOut(RED, node, msg, done);*/
             }
 
         });
