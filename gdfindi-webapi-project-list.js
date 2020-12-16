@@ -13,7 +13,9 @@ module.exports = function (RED) {
 
     //properties field
     this.enableCreate = config.enableCreate;
+    this.htmlTemplate = config.htmlTemplate;
     var enableCreate = this.enableCreate;
+    var htmlTemplate = this.htmlTemplate;
 
     this.urlProjectList = "/projectlist";
     this.methodProjectList = "get";
@@ -58,6 +60,8 @@ module.exports = function (RED) {
         var buffer = element.id;
         var link = `/req?projectId=${buffer}`;
         element.id = "<a href=" + link + " target='_self'>" + buffer + "</a>";
+        buffer = element.name;
+        element.name = "<a href=" + link + " target='_self'>" + buffer + "</a>";
 
       });
 
@@ -66,9 +70,9 @@ module.exports = function (RED) {
         <table id="table">
           <thead>
             <tr>
-              <th data-field="id">Project ID</th>
-              <th data-field="name">Project Name</th>
-              <th data-field="owner">Owner</th>
+              <th data-field="id" class="text-center">Project ID</th>
+              <th data-field="name" class="text-center">Project Name</th>
+              <th data-field="owner" class="text-center">Owner</th>
             </tr>
           </thead>
         </table>
@@ -85,7 +89,12 @@ module.exports = function (RED) {
       `;
 
       msg.payload = '';
-      msg.payload = utility.htmlTemplate(title, library, style, header, body, script);
+      if(htmlTemplate === 'VFK'){
+        msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 1);
+      }else{
+        msg.payload = utility.htmlTemplate(title, library, style, header, body, script);
+      }
+      
 
       /* -------- http out -------- */
       httpOut(RED, node, msg, done);

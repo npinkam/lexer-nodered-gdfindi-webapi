@@ -3,7 +3,8 @@
         category: 'lexer-function',
         color: '#a6bbcf',
         defaults: {
-            enableCreate: {value: true}
+            enableCreate: {value: true},
+            htmlTemplate: {value: ""}
 },
         inputs:1,
         outputs:1,
@@ -26,6 +27,12 @@
         <label for="node-input-enableCreate" style="width:70%">
         <input type="checkbox" id="node-input-enableCreate" style="display:inline-block; width:22px; vertical-align:top;">  Enable create new project
         </label>
+        <br/><br/>
+        <label for="node-input-htmlTemplate" style="width:70%">Select HTML Template: </label>
+            <select name="node-input-htmlTemplate" id="node-input-htmlTemplate">
+                <option value="default" selected>Default</option>
+                <option value="VFK">VFK Template</option>
+              </select> 
     </div>
 </script>
 
