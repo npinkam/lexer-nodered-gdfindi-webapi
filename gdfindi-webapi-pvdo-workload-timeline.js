@@ -63,6 +63,9 @@ module.exports = function (RED) {
             } else {
                 //workLoadChart
                 var result = response.results[0].statisticalResult.workLoadChartOfStation;
+                //JSON
+                var outputJSON = {};
+                outputJSON.Station = [];
 
                 var today = new Date();
                 var todayStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
@@ -104,6 +107,10 @@ module.exports = function (RED) {
                     //remove first str
                     timeline.shift();
                     cumTimeline = timeline.map(elem => sum = (sum || 0) + parseInt(elem));
+
+                    //JSON
+                    var workArray = [];
+                    
                     for (var j = 0; j < arrayHeader.length; j++) {
                         //remove the idling text
                         if (arrayHeader[j] === 'Idling') { 
@@ -117,92 +124,102 @@ module.exports = function (RED) {
                     //console.log(cumTimeline)
                     var endTime = [];
                     for (var j = 0; j < arrayHeader.length; j++) {
-                        //endTime.push(parseInt(cumTimeline[j]) - parseInt(timeline[j]))
-                        let endTimeSingle = parseInt(cumTimeline[j]) - parseInt(timeline[j]);
-                        let array = [station, '', tooltipStr(arrayHeader[j], timeline[j]), timeStr(endTimeSingle), timeStr(parseInt(cumTimeline[j]))]
+                        let startTime = parseInt(cumTimeline[j]) - parseInt(timeline[j]);
+                        let array = [station, '', tooltipStr(arrayHeader[j], timeline[j]), timeStr(startTime), timeStr(parseInt(cumTimeline[j]))]
                         //console.log(array);
                         arrayToHtml.push(array);
+                        
+                        //JSON
+                        var str = taskSplit(arrayHeader[j])
+                        workArray.push({
+                          "WorkType": str[0],
+                          "ProductName": str[1],
+                          "ProductionProcessName": str[2],
+                          "ProcessIndex": parseInt(str[3]),
+                          "Count": parseInt(str[4]),
+                          "StartTime": startTime,
+                          "Duration": parseInt(timeline[j])
+                        });
                     }
-                    //console.log(endTime);
+                    //JSON
+                    var stationJSON = {
+                      "name": station,
+                      "Work": workArray
+                    }
+                    outputJSON.Station.push(stationJSON);
                 }
-
+                var outputJSONStr = JSON.stringify(outputJSON);
+                
                 var payload = JSON.stringify(arrayToHtml);
                 //google charts
-
-
-                //json
-                var workloadJSON = {
-                    "@class": "Application",
-                    "uuid": "e27275a4-bf01-488e-a878-22e279173113", 
-                    "name": "Workload Chart",
-                    "description": "A workload chart in JSON format.",
-                    "token": "73113",
-                    "events": [
-                      {
-                        "@id": projectId, 
-                        "eventId": "updatedText",
-                        "name": "Workload Chart",
-                        "description": "A workload chart in JSON format.",
-                        "dataFormat": {
-                          "dataObject": {
-                            "$ref": "/definition/Object"
-                          },
-                          "Object": {
-                            "type": "object",
-                            "properties": {
-                              "station": {
-                                "$ref": "#/definition/Station"
-                              }
-                            }
-                          },
-                          "Station": {
-                            "type": "object",
-                            "properties": {
-                              "text": {
-                                "name": "string"
-                              },
-                              "works": {
-                                "$ref": "#/definition/Work"
-                              }
-                            }
-                          },
-                          "Work": {
-                            "type": "object",
-                            "properties": {
-                              "WorkType": {
-                                "type": "string"
-                              },
-                              "Time": {
-                                "type": "number"
-                              },
-                              "ProductName": {
-                                "type": "string"
-                              },
-                              "Count": {
-                                "type": "number"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ],
-                    "functions": [],
-                    "endpoints": []
-                  }
 
                 var title = `GD.findi Gantt Chart`
                 var library = `
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.6.8/beautify.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
 `;
                 var style = `
+                .title {
+                  font-size: 1.67em;
+                  font-weight: bold;
+                  text-align: center;
+                }
+                #editor {
+                  height: 55vh;
+                  width: 100%;
+                }
+                textarea[name="editor"] {
+                  display: none;
+                }
                 
+                .as-console-wrapper {
+                  display: none !important;
+                }
                 `;
                 var body = `
-                <div id="payload_div" style="width:100%;"></div>
+                <div class="title">Project#${projectId} Workload Chart</div>
                 <div id="chart_div" style="width:100%;"></div>
+                <div class="title">Project#${projectId} Workload JSON</div>
+                <textarea name="editor">${outputJSONStr}</textarea>
+                <div id="editor"></div>
                 `;
                 var script = `
+                //JSON
+                var editor = ace.edit('editor');
+          var txtAra = document.querySelector('textarea[name="editor"]');
+          var jsbOpts = {
+            indent_size : 2
+          };
+          
+          // Setup
+          editor.setTheme("ace/theme/monokai");
+          editor.getSession().setMode("ace/mode/json");
+          syncEditor();
+          
+          // Main Logic
+          formatCode();
+      
+          //when hit submit form
+          $('#edit').submit(function(event){
+            commitChanges();
+          });
+          
+          // Functions
+          function syncEditor() {
+            editor.getSession().setValue(txtAra.value);
+          }
+          function commitChanges() {
+            txtAra.value = editor.getSession().getValue();
+          }
+          function formatCode() {
+            var session = editor.getSession();
+            session.setValue(js_beautify(session.getValue(), jsbOpts));
+          }
+
+
                 google.charts.load("current", {packages:["timeline"]});
         google.charts.setOnLoadCallback(drawChart);
         
@@ -222,10 +239,11 @@ module.exports = function (RED) {
                 data[i][3] = new Date(data[i][3]);
                 data[i][4] = new Date(data[i][4]);
             }
-            //document.getElementById('payload_div').innerHTML = data;
+            //var jsonData = ${outputJSONStr}
+            //document.getElementById('payload_div').innerHTML = jsonData;
 
             dataTable.addRows(data);
-            var chartHeight = ${JSON.stringify(totalRow)} * 41 + 30;
+            var chartHeight = ${JSON.stringify(totalRow)} * 35;
             var options = {
                 height: chartHeight,
                 timeline: { colorByRowLabel: true },
