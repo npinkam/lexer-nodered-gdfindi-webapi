@@ -66,12 +66,6 @@ module.exports = function (RED) {
                 //JSON
                 var outputJSON = {};
                 outputJSON.Station = [];
-
-                var today = new Date();
-                var todayStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-                var timeStr = function (sec) {
-                    return new Date(todayStr + ' ' + new Date(sec * 1000).toISOString().substr(11, 8))
-                };
                 var taskSplit = function (str) {
                     str = str.split(/[\s@]+/);
                     //if there are 4 elements -> have extra work
@@ -125,7 +119,7 @@ module.exports = function (RED) {
                     var endTime = [];
                     for (var j = 0; j < arrayHeader.length; j++) {
                         let startTime = parseInt(cumTimeline[j]) - parseInt(timeline[j]);
-                        let array = [station, '', tooltipStr(arrayHeader[j], timeline[j]), timeStr(startTime), timeStr(parseInt(cumTimeline[j]))]
+                        let array = [station, '', tooltipStr(arrayHeader[j], timeline[j]), startTime, parseInt(cumTimeline[j])]
                         //console.log(array);
                         arrayToHtml.push(array);
                         
@@ -180,6 +174,7 @@ module.exports = function (RED) {
                 }
                 `;
                 var body = `
+                <div id="payload_div"></div>
                 <div class="title">Project#${projectId} Workload Chart</div>
                 <div id="chart_div" style="width:100%;"></div>
                 <div class="title">Project#${projectId} Workload JSON</div>
@@ -224,6 +219,12 @@ module.exports = function (RED) {
         google.charts.setOnLoadCallback(drawChart);
         
         function drawChart() {
+          var today = new Date();
+          var todayStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+          var timeStr = function (sec) {
+              return new Date(todayStr + ' ' + new Date(sec * 1000).toISOString().substr(11, 8))
+          };
+
     var container = document.getElementById('chart_div');
     var chart = new google.visualization.Timeline(container);
     var dataTable = new google.visualization.DataTable();
@@ -236,12 +237,10 @@ module.exports = function (RED) {
             var data = ${payload};
             //convert the date to an acceptable format
             for (var i = 0; i < data.length; i++) {
-                data[i][3] = new Date(data[i][3]);
-                data[i][4] = new Date(data[i][4]);
+                data[i][3] = timeStr(data[i][3]);
+                data[i][4] = timeStr(data[i][4]);
             }
-            //var jsonData = ${outputJSONStr}
-            //document.getElementById('payload_div').innerHTML = jsonData;
-
+            //document.getElementById('payload_div').innerHTML=data;
             dataTable.addRows(data);
             var chartHeight = ${JSON.stringify(totalRow)} * 35;
             var options = {
