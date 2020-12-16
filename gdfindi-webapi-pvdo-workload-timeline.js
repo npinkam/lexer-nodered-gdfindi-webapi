@@ -65,7 +65,7 @@ module.exports = function (RED) {
                 var result = response.results[0].statisticalResult.workLoadChartOfStation;
                 //JSON
                 var outputJSON = {};
-                outputJSON.Station = [];
+                outputJSON.stations = [];
                 var taskSplit = function (str) {
                     str = str.split(/[\s@]+/);
                     //if there are 4 elements -> have extra work
@@ -138,9 +138,9 @@ module.exports = function (RED) {
                     //JSON
                     var stationJSON = {
                       "name": station,
-                      "Work": workArray
+                      "works": workArray
                     }
-                    outputJSON.Station.push(stationJSON);
+                    outputJSON.stations.push(stationJSON);
                 }
                 var outputJSONStr = JSON.stringify(outputJSON);
                 
