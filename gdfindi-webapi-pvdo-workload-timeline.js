@@ -71,7 +71,7 @@ module.exports = function (RED) {
                     //if there are 4 elements -> have extra work
                     //if there are 3 elements -> have normal work
                     if (str.length === 4) {
-                        str = [str[0] + '@' + str[1], str[2], str[3]]
+                        str = [str[0], str[2], str[3]]
                     }
                     let middleStr = str[1].split(/[\s.]+/);
                     let middleLastStr = middleStr[1].split(/[\s:]+/)
