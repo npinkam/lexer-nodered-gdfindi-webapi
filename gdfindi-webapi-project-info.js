@@ -17,10 +17,12 @@ module.exports = function (RED) {
     this.enableEdit = config.enableEdit;
     this.enableDelete = config.enableDelete;
     this.enableExec = config.enableExec;
+    this.htmlTemplate = config.htmlTemplate;
 
     var enableEdit = this.enableEdit;
     var enableDelete = this.enableDelete;
     var enableExec = this.enableExec;
+    var htmlTemplate = this.htmlTemplate;
 
     this.urlEdit = "/edit";
     this.methodEdit = "get";
@@ -252,7 +254,6 @@ module.exports = function (RED) {
       xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
       xhr.send();
       var response = JSON.parse(xhr.responseText);
-      var html = tableify(response);
 
       var enableEditText = '';
       var enableDeleteText = '';
@@ -354,8 +355,8 @@ module.exports = function (RED) {
     <table id="table">
     <thead>
       <tr>
-        <th data-field="id">ID</th>
-        <th data-field="name">Product Name</th>
+        <th data-field="id" class="text-center">ID</th>
+        <th data-field="name" class="text-center">Product Name</th>
       </tr>
     </thead>
   </table>
@@ -372,8 +373,74 @@ module.exports = function (RED) {
       `;
 
       msg.payload = '';
-      msg.payload = utility.htmlTemplate(title, library, style, header, body, script)
+      if(htmlTemplate === 'VFK'){
+      httpIn(RED, node, '/', this.methodExec, this.callbackExec);
+      // get initplans
+      var hasProductionProcesses = response.hasOwnProperty('productionProcesses');
+      var process = [];
+      if (hasProductionProcesses === true) {
+        response.productionProcesses.forEach(element => {
+          var hasRenderingCondition = response.hasOwnProperty('renderingCondition');
+          var lotsize = null;
+          var processName = element.name;
+          if(hasRenderingCondition == true){
+            response.renderingCondition.productionSchedules[0].orders.forEach(element => {
+              if(element.product == processName){
+                lotsize = element.lotsize;
+              }
+            })
+          }
+          process.push({
+            "productid": processName, //name of process
+            "lotsize": lotsize, // lot size
+            "daytime":null, // Math.floor(Math.random() * 86400), //start time
+            "islot": false, //  Lot
+            "line": null, // Line name
+            "processid": null, // First process id
+            "stationid": null, // First station id
+            "deliveryTime": null // Delivery time (second)
+          });
+        })
+      }else{
+        //cant process
+        msg.payload = 'Cannot Process. Not enough information.';
+        httpOut(RED, node, msg, done);
+        return
+      }
 
+      var renderingParameter = {
+        "iniplans": process, // Initial production order.
+        "goals": null, // Production goal. Is not specified, calculated from initial production order.
+        "patternCondition": {
+          "RenderingType": 0, // Target of pattern. 0: production order
+          "Patterns": [ // index of initial production order.
+            [...Array(process.length).keys()]
+          ]
+        },
+        "start": 0, // Start time.
+        "mode": "Mining" // Rendering output mode. See below.
+      };
+        var additionalBody = `
+        </div>
+        <div style="padding-top: 15px; text-align: center;">
+        <form id="edit" action=/submitexec method="post">
+      <input type="hidden" id="projectId" name="projectId" value=${projectId}>
+      <input type="hidden" id="editor" name="editor" value=${JSON.stringify(renderingParameter)}>
+      <button type="submit" id='pvdo-submit-button' class="btn btn-primary btn-lg mr-5">Submit to PVDO</button>
+  </form>
+        `;
+        body = body + additionalBody;
+        var additionalScript =`
+        $('#pvdo-submit-button').on('click', (event)=>{
+          $("#step2").attr('class', 'md-step active done')
+          $("#step3").attr('class', 'md-step active editable')
+        })
+        `
+        script = additionalScript + script;
+        msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 2);
+      }else{
+        msg.payload = utility.htmlTemplate(title, library, style, header, body, script);
+      }
       // -------- http out -------- 
       httpOut(RED, node, msg, done);
 

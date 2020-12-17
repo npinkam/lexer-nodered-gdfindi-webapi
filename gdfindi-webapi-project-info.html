@@ -5,7 +5,8 @@
         defaults: {
             enableEdit: { value: true },
             enableDelete: { value: true },
-            enableExec: { value: true }
+            enableExec: { value: true },
+            htmlTemplate: { value: "" }
         },
         inputs: 1,
         outputs: 1,
@@ -22,11 +23,17 @@
         <input type="checkbox" id="node-input-enableEdit" style="display:inline-block; width:22px; vertical-align:top;">  Enable edit project
         </label>
         <label for="node-input-enableDelete" style="width:70%">
-            <input type="checkbox" id="node-input-enableDelete" style="display:inline-block; width:22px; vertical-align:top;">  Enable delete project
-            </label>
-            <label for="node-input-enableExec" style="width:70%">
-                <input type="checkbox" id="node-input-enableExec" style="display:inline-block; width:22px; vertical-align:top;">  Enable execute project
-                </label>
+        <input type="checkbox" id="node-input-enableDelete" style="display:inline-block; width:22px; vertical-align:top;">  Enable delete project
+        </label>
+        <label for="node-input-enableExec" style="width:70%">
+        <input type="checkbox" id="node-input-enableExec" style="display:inline-block; width:22px; vertical-align:top;">  Enable execute project
+        </label>
+        <br/><br/>
+        <label for="node-input-htmlTemplate" style="width:70%">Select HTML Template: </label>
+            <select name="node-input-htmlTemplate" id="node-input-htmlTemplate">
+                <option value="default" selected>Default</option>
+                <option value="VFK">VFK Template</option>
+              </select> 
     </div>
 </script>
 
