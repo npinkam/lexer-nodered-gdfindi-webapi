@@ -9,6 +9,8 @@ module.exports = function (RED) {
     function gdfindiWebapiPVDOGanttChartNode(config) {
         RED.nodes.createNode(this, config);
         var node = this;
+        this.htmlTemplate = config.htmlTemplate;
+        var htmlTemplate = config.htmlTemplate;
 
         // add codeBeforeReceivePayload
         node.on('input', function (msg, done) {
@@ -141,8 +143,14 @@ module.exports = function (RED) {
             chart.draw(otherData, options);
         }
                 `;
-
-                msg.payload = utility.htmlTemplate(title, library, style, header, body, script)
+            if(htmlTemplate === 'VFK'){
+                style = style + `#vfk-body {
+                    height: 60vh;
+                  }`;
+                msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 5);
+            }else{
+              msg.payload = utility.htmlTemplate(title, library, style, header, body, script);
+            }
                 httpOut(RED, node, msg, done);
             }
 

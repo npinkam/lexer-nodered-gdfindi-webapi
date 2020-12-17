@@ -49,7 +49,7 @@ module.exports = function (RED) {
       <script src="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
       `;
-      var style = '';
+      var style = ``;
       var enableCreateText = '';
       if (enableCreate == true) {
         enableCreateText = `<a href="/create">Create New Project</a>`;
@@ -90,6 +90,9 @@ module.exports = function (RED) {
 
       msg.payload = '';
       if(htmlTemplate === 'VFK'){
+        style = style + `#vfk-body {
+          height: 60vh;
+        }`;
         msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 1);
       }else{
         msg.payload = utility.htmlTemplate(title, library, style, header, body, script);

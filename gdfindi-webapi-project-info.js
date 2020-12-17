@@ -374,7 +374,6 @@ module.exports = function (RED) {
 
       msg.payload = '';
       if(htmlTemplate === 'VFK'){
-      httpIn(RED, node, '/', this.methodExec, this.callbackExec);
       // get initplans
       var hasProductionProcesses = response.hasOwnProperty('productionProcesses');
       var process = [];
@@ -437,6 +436,10 @@ module.exports = function (RED) {
         })
         `
         script = additionalScript + script;
+
+        style = style + `#vfk-body {
+          height: 50vh;
+        }`;
         msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 2);
       }else{
         msg.payload = utility.htmlTemplate(title, library, style, header, body, script);
