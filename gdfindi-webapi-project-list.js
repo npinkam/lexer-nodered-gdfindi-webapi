@@ -90,7 +90,7 @@ module.exports = function (RED) {
       msg.payload = '';
       if(htmlTemplate === 'VFK'){
         style = style + `#vfk-body {
-          height: 60vh;
+          height: 55vh;
         }`;
         msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 1);
       }else{

@@ -261,7 +261,7 @@ module.exports = function (RED) {
 
         if (htmlTemplate === 'VFK') {
           style = style + `#vfk-body {
-            height: 60vh;
+            height: 55vh;
           }
           #editor {
             height:30vh;
