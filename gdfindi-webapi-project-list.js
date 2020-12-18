@@ -1,6 +1,5 @@
 module.exports = function (RED) {
   "use strict";
-  const tableify = require('tableify');
   const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
   const httpIn = require('./lib/httpIn.js');
   const httpOut = require('./lib/httpOut.js');
