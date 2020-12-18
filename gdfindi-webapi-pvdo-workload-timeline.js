@@ -181,9 +181,11 @@ module.exports = function (RED) {
                 <div id="payload_div"></div>
                 <div class="title">Project#${projectId} Workload Chart</div>
                 <div id="chart_div"></div>
+                <div id="editor_div">
                 <div class="title">Project#${projectId} Workload JSON</div>
                 <textarea name="editor">${outputJSONStr}</textarea>
                 <div id="editor"></div>
+                </div>
                 `;
         var script = `
                 //JSON
@@ -262,15 +264,29 @@ module.exports = function (RED) {
         if (htmlTemplate === 'VFK') {
           style = style + `#vfk-body {
             height: 55vh;
+            overflow: hidden;
           }
           #editor {
             height:30vh;
+          }
+          #editor_div {
+            visibility: hidden;
           }
           #chart_div {
             width:98.5%;
             padding: 5px 5px;
           }
+          .ace_scroller {
+            display: none !important;
+        }
           `;
+          var additionalScript = `
+            setTimeout(()=>{
+              window.location='/projectlist'
+            }, 5000);
+            
+          `;
+          script = script + additionalScript;
           msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 5);
           //Send outputJSONStr to external server
         } else {
