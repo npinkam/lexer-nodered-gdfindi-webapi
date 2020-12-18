@@ -286,7 +286,22 @@ module.exports = function (RED) {
             display: none !important;
         }
           `;
+          var data = {
+            "eventId": "live-information",
+            "priority": "0",
+            "uuid": "e27275a4-bf01-488e-a878-22e279173113",
+            "dataObject": outputJSONStr
+          }
           var additionalScript = `
+          $.ajax({
+            type: "POST",
+            url: 10.3.4.30:8083,
+            data: ${JSON.stringify(data)},
+            success: (result)=>{
+              document.getElementById('payload_div').innerHTML=result;
+            }
+            dataType: "text"
+          });
             setTimeout(()=>{
               window.location='/projectlist'
             }, 5000);
