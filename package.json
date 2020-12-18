@@ -13,7 +13,8 @@
     "client-oauth2": "^4.3.3",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
-    "multer": "^1.4.2"
+    "multer": "^1.4.2",
+    "cors": "^2.8.5"
   },
 "node-red" : {
     "nodes": {
