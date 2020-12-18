@@ -437,7 +437,7 @@ module.exports = function (RED) {
         script = additionalScript + script;
 
         style = style + `#vfk-body {
-          height: 50vh;
+          height: 45vh;
         }`;
         msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 2);
       }else{
