@@ -443,7 +443,7 @@ module.exports = function (RED) {
         }
         .loader {
           position: absolute;
-          left: 47%;
+          left: 46.5%;
           top: 48%;
           z-index: 1;
           border: 16px solid #f3f3f3;
