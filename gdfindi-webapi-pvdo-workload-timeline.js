@@ -293,22 +293,6 @@ module.exports = function (RED) {
             "dataObject": outputJSONStr
           }
           var additionalScript = `
-          $.ajax({
-            type: "POST",
-            url: 10.3.4.30:8083,
-            data: ${JSON.stringify(data)},
-            success: (result)=>{
-              if (result.error == "true") 
-              {
-                  window.alert("An error occurred: " & result.errorMessage);
-              }
-              else 
-              {
-                  window.alert(result)
-              }
-            }
-            dataType: "text"
-          });
             setTimeout(()=>{
               window.location='/projectlist'
             }, 5000);
