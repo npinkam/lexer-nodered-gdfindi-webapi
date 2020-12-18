@@ -298,7 +298,14 @@ module.exports = function (RED) {
             url: 10.3.4.30:8083,
             data: ${JSON.stringify(data)},
             success: (result)=>{
-              document.getElementById('payload_div').innerHTML=result;
+              if (result.error == "true") 
+              {
+                  alert("An error occurred: " & result.errorMessage);
+              }
+              else 
+              {
+                  alert(result)
+              }
             }
             dataType: "text"
           });
