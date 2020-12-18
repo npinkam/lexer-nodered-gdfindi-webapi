@@ -424,21 +424,43 @@ module.exports = function (RED) {
         <form id="edit" action=/submitexec method="post">
       <input type="hidden" id="projectId" name="projectId" value=${projectId}>
       <input type="hidden" id="editor" name="editor" value=${JSON.stringify(renderingParameter)}>
-      <button type="submit" id='pvdo-submit-button' class="btn btn-primary btn-lg mr-5">Submit to PVDO</button>
+      <button type="submit" id='pvdo-submit-button' class="btn btn-primary btn-lg mr-5">Submit to PVDO <i class="fa fa-bar-chart" aria-hidden="true"></i></button>
   </form>
+  <div class="loader" style="visibility: hidden;"></div>
         `;
         body = body + additionalBody;
         var additionalScript =`
         $('#pvdo-submit-button').on('click', (event)=>{
           $("#step2").attr('class', 'md-step active done')
           $("#step3").attr('class', 'md-step active editable')
+          $(".loader").css("visibility", "visible")
         })
         `
         script = additionalScript + script;
 
         style = style + `#vfk-body {
           height: 45vh;
-        }`;
+        }
+        .loader {
+          position: absolute;
+          left: 47%;
+          top: 48%;
+          z-index: 1;
+          border: 16px solid #f3f3f3;
+          -webkit-animation: spin 1s linear infinite;
+          animation: spin 2s linear infinite;
+          border-top: 16px solid #555;
+          border-bottom: 16px solid #555;
+          border-radius: 50%;
+          width: 120px;
+          height: 120px;
+        }
+        
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        `;
         msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 2);
       }else{
         msg.payload = utility.htmlTemplate(title, library, style, header, body, script);
