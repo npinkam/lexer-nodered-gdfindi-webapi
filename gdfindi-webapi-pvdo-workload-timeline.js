@@ -300,11 +300,11 @@ module.exports = function (RED) {
             success: (result)=>{
               if (result.error == "true") 
               {
-                  alert("An error occurred: " & result.errorMessage);
+                  window.alert("An error occurred: " & result.errorMessage);
               }
               else 
               {
-                  alert(result)
+                  window.alert(result)
               }
             }
             dataType: "text"
