@@ -6,12 +6,10 @@ var fullSubmissionJSON = {
     "uuid": "e27275a4-bf01-488e-a878-22e279173113",
     "dataObject": JSON.stringify(submissionJSON)
 }
-console.log(JSON.stringify(fullSubmissionJSON));
 
 var xhr = new XMLHttpRequest();
 xhr.open("POST", "http://10.3.4.30:8083/rest/data", false);
 xhr.setRequestHeader("Content-Type", "Application/json;charset=UTF-8");
 xhr.send(JSON.stringify(fullSubmissionJSON));
 
-var response = JSON.parse(xhr.responseText);
-console.log(response);
+var response = xhr.responseText;
