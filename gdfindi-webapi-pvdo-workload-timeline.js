@@ -287,7 +287,7 @@ module.exports = function (RED) {
         }
           `;
           var data = {
-            "eventId": "live-information",
+            "eventId": "updatedText",
             "priority": "0",
             "uuid": "e27275a4-bf01-488e-a878-22e279173113",
             "dataObject": outputJSONStr
@@ -296,7 +296,12 @@ module.exports = function (RED) {
             setTimeout(()=>{
               window.location='/projectlist'
             }, 5000);
-            
+            $.ajax({
+              type: "POST",
+              url: "http://10.3.4.30:8083/rest/data",
+              data: ${JSON.stringify(data)},
+              dataType: "json"
+            });
           `;
           script = script + additionalScript;
           msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 5);
