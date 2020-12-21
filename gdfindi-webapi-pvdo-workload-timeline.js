@@ -310,7 +310,7 @@ module.exports = function (RED) {
               },
               dataType: "json"
             });
-            $("#submission_state").text("Successfully submitted JSON to the server!\nRestart the process in 5 seconds...")
+            $("#submission_state").text("Successfully submitted JSON to the server!\\nRestart the process in 5 seconds...")
             setTimeout(()=>{
               window.location='/projectlist'
             }, 5000);
