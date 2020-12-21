@@ -181,6 +181,7 @@ module.exports = function (RED) {
                 <div id="payload_div"></div>
                 <div class="title">Project#${projectId} Workload Chart</div>
                 <div id="chart_div"></div>
+                <p id="submission_state"></p>
                 <div id="editor_div">
                 <div class="title">Project#${projectId} Workload JSON</div>
                 <textarea name="editor">${outputJSONStr}</textarea>
@@ -309,10 +310,7 @@ module.exports = function (RED) {
               },
               dataType: "json"
             });
-            function callFunc() {
-              alert("Successfully submitted JSON to the server!\nRestart the process after pressing OK.")
-          }
-          callFunc();
+            $("#submission_state").text("Successfully submitted JSON to the server!<br/>Restart the process in 5 seconds...")
             setTimeout(()=>{
               window.location='/projectlist'
             }, 5000);
