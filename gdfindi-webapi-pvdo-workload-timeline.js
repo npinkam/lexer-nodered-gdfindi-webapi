@@ -290,12 +290,9 @@ module.exports = function (RED) {
             "eventId": "updatedText",
             "priority": "0",
             "uuid": "e27275a4-bf01-488e-a878-22e279173113",
-            "dataObject": outputJSONStr
+            "dataObject": outputJSON
           }
           var additionalScript = `
-            setTimeout(()=>{
-              window.location='/projectlist'
-            }, 5000);
             $.ajax({
               type: "POST",
               url: "http://10.3.4.30:8083/rest/data",
@@ -312,6 +309,9 @@ module.exports = function (RED) {
               },
               dataType: "json"
             });
+            setTimeout(()=>{
+              window.location='/projectlist'
+            }, 5000);
           `;
           script = script + additionalScript;
           msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 5);
