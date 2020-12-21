@@ -4,7 +4,7 @@ var fullSubmissionJSON = {
     "eventID": "updatedText",
     "priority": "0",
     "uuid": "e27275a4-bf01-488e-a878-22e279173113",
-    "dataObject": submissionJSON
+    "dataObject": JSON.stringify(submissionJSON)
 }
 console.log(JSON.stringify(fullSubmissionJSON));
 
