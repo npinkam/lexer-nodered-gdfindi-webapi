@@ -300,6 +300,16 @@ module.exports = function (RED) {
               type: "POST",
               url: "http://10.3.4.30:8083/rest/data",
               data: ${JSON.stringify(data)},
+              success: (result)=>{
+                if (result.error == "true") 
+                {
+                    alert("An error occurred: " & result.errorMessage);
+                }
+                else 
+                {
+                    alert("Successfully submitted JSON to the server!")
+                }
+              },
               dataType: "json"
             });
           `;
