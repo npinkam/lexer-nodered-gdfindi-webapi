@@ -309,6 +309,7 @@ module.exports = function (RED) {
               },
               dataType: "json"
             });
+            alert("Successfully submitted JSON to the server!\nRestart the process after pressing OK.")
             setTimeout(()=>{
               window.location='/projectlist'
             }, 5000);
