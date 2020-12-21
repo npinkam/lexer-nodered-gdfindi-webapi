@@ -7,7 +7,7 @@ var registrationJSON = {
     "token": "73113",
     "events": [
         {
-            "@id": projectId,
+            "@id": "projectId",
             "eventId": "updatedText",
             "name": "Workload Chart",
             "description": "A workload chart in JSON format.",
