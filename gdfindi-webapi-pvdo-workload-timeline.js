@@ -249,7 +249,7 @@ module.exports = function (RED) {
             }
             //document.getElementById('payload_div').innerHTML=data;
             dataTable.addRows(data);
-            var chartHeight = ${JSON.stringify(totalRow)} * 35;
+            var chartHeight = ${JSON.stringify(totalRow/2)} * 35;
             var options = {
                 height: chartHeight,
                 timeline: { colorByRowLabel: true },
