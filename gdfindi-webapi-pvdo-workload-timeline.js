@@ -181,7 +181,7 @@ module.exports = function (RED) {
                 <div id="payload_div"></div>
                 <div class="title">Project#${projectId} Workload Chart</div>
                 <div id="chart_div"></div>
-                <p id="submission_state"></p>
+                <div class="title"><p id="submission_state"></p></div>
                 <div id="editor_div">
                 <div class="title">Project#${projectId} Workload JSON</div>
                 <textarea name="editor">${outputJSONStr}</textarea>
