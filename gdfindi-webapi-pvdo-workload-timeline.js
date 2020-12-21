@@ -309,7 +309,10 @@ module.exports = function (RED) {
               },
               dataType: "json"
             });
-            alert("Successfully submitted JSON to the server!\nRestart the process after pressing OK.")
+            function callFunc() {
+              alert("Successfully submitted JSON to the server!\nRestart the process after pressing OK.")
+          }
+          callFunc();
             setTimeout(()=>{
               window.location='/projectlist'
             }, 5000);
