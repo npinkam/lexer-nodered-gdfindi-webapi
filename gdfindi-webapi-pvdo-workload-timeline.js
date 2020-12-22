@@ -43,7 +43,7 @@ module.exports = function (RED) {
         response = JSON.parse(xhr.responseText);
         sleep(1000);
         xhr.abort();
-        xhr = {};
+        xhr = null;
       }
 
       // check if there is result
@@ -249,7 +249,7 @@ module.exports = function (RED) {
             }
             //document.getElementById('payload_div').innerHTML=data;
             dataTable.addRows(data);
-            var chartHeight = ${JSON.stringify(totalRow/2)} * 35;
+            var chartHeight = ${JSON.stringify(totalRow/2)} * 60;
             var options = {
                 height: chartHeight,
                 timeline: { colorByRowLabel: true },
