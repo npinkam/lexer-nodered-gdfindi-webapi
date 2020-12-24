@@ -27,7 +27,7 @@ module.exports = function (RED) {
       console.log(req.body)
       console.log(projectId)
       console.log(content)
-      /* var xhr = new XMLHttpRequest();
+      var xhr = new XMLHttpRequest();
       xhr.open("POST", utility.gdFindiUrl()+"/api/v1/PVDO/" + projectId, true);
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -43,7 +43,7 @@ module.exports = function (RED) {
         }
         //console.log('readystate: '+ this.readyState+'\n status: '+this.status+'\n'+this.responseText+'\n ----------------------')
       };
-      xhr.send(content); */
+      xhr.send(content);
     }
 
     httpIn(RED, node, this.urlSubmitExec, this.methodSubmitExec, this.callbackSubmitExec);
