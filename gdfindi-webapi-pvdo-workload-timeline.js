@@ -144,7 +144,7 @@ module.exports = function (RED) {
           outputJSON.stations.push(stationJSON);
         }
         var outputJSONStr = JSON.stringify(outputJSON);
-        console.log(arrayToHtml)
+        
         var payload = JSON.stringify(arrayToHtml);
         //google charts
 
