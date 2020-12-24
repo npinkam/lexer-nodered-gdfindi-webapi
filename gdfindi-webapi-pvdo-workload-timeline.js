@@ -91,6 +91,7 @@ module.exports = function (RED) {
         //odd first value = row header
         var arrayToHtml = [];
         var totalRow = result.length;
+        console.log(result)
         for (var i = 0; i < result.length; i += 2) {
           var arrayHeader, timeline, cumTimeline;
           var station = result[i + 1][0];
