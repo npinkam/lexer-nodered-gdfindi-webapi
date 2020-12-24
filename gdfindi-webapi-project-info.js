@@ -418,13 +418,12 @@ module.exports = function (RED) {
           "mode": "Mining" // Rendering output mode. See below.
         };
         console.log(JSON.stringify(renderingParameter))
-        //<textarea name="editor" style="display:none;">${JSON.stringify(renderingParameter)}</textarea>
         var additionalBody = `
         </div>
         <div style="padding-top: 15px; text-align: center;">
         <form id="edit" action=/submitexec method="post">
       <input type="hidden" id="projectId" name="projectId" value=${projectId}>
-      <input type="hidden" id="editor" name="editor" value="${JSON.stringify(renderingParameter)}">
+      <textarea name="editor" style="display:none;">${JSON.stringify(renderingParameter)}</textarea>
       <button type="submit" id='pvdo-submit-button' class="btn btn-primary btn-lg mr-5">Submit to PVDO <i class="fa fa-bar-chart" aria-hidden="true"></i></button>
   </form>
   <div class="loader" style="visibility: hidden;"></div>
