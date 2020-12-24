@@ -144,6 +144,7 @@ module.exports = function (RED) {
           }
           outputJSON.stations.push(stationJSON);
         }
+        console.log(outputJSON)
         var outputJSONStr = JSON.stringify(outputJSON);
 
         var payload = JSON.stringify(arrayToHtml);
