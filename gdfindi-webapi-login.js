@@ -74,7 +74,7 @@ module.exports = function (RED) {
             var lexerAuth = new ClientOAuth2({
                 accessTokenUri: utility.gdFindiUrl()+"token",
             });
-            
+            console.log(utility.gdFindiUrl()+"token")
             var username = req.body.username;
             var password = req.body.password;
 
