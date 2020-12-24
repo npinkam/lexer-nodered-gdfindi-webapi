@@ -253,7 +253,6 @@ module.exports = function (RED) {
       xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
       xhr.send();
       var response = JSON.parse(xhr.responseText);
-      console.log(response)
 
       var enableEditText = '';
       var enableDeleteText = '';
@@ -419,7 +418,6 @@ module.exports = function (RED) {
         "start": 0, // Start time.
         "mode": "Mining" // Rendering output mode. See below.
       };
-      console.log(renderingParameter)
         var additionalBody = `
         </div>
         <div style="padding-top: 15px; text-align: center;">
