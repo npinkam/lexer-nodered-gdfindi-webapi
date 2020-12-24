@@ -374,11 +374,10 @@ module.exports = function (RED) {
       msg.payload = '';
       if (htmlTemplate === 'VFK') {
         // get initplans
-        var hasProductionProcesses = response.hasOwnProperty('productionProcesses');
+        var hasRenderingCondition = response.hasOwnProperty('renderingCondition');
         var process = [];
-        if (hasProductionProcesses === true) {
+        if (hasRenderingCondition == true) {
           response.renderingCondition.productionSchedules[0].orders.forEach(element => {
-            if (element.product == processName) {
               process.push({
                 "productid": element.product, //name of process
                 "lotsize": element.lotsize, // lot size
@@ -389,7 +388,6 @@ module.exports = function (RED) {
                 "stationid": null, // First station id
                 "deliveryTime": null // Delivery time (second)
               });
-            }
           })
         } else {
           //cant process
