@@ -374,50 +374,49 @@ module.exports = function (RED) {
       msg.payload = '';
       if (htmlTemplate === 'VFK') {
         // get initplans
-        var process = []
-        var hasRenderingCondition = response.hasOwnProperty('renderingCondition');
-        var lotsize = null;
-        if (hasRenderingCondition == true) {
+        var hasProductionProcesses = response.hasOwnProperty('productionProcesses');
+        var process = [];
+        if (hasProductionProcesses === true) {
           response.renderingCondition.productionSchedules[0].orders.forEach(element => {
-            lotsize = element.lotsize;
-            process.push({
-              "productid": element.product, //name of process
-              "lotsize": element.lotsize, // lot size
-              "daytime": null, // Math.floor(Math.random() * 86400), //start time
-              "islot": false, //  Lot
-              "line": null, // Line name
-              "processid": null, // First process id
-              "stationid": null, // First station id
-              "deliveryTime": null // Delivery time (second)
-            });
+            if (element.product == processName) {
+              process.push({
+                "productid": element.product, //name of process
+                "lotsize": element.lotsize, // lot size
+                "daytime": null, // Math.floor(Math.random() * 86400), //start time
+                "islot": false, //  Lot
+                "line": null, // Line name
+                "processid": null, // First process id
+                "stationid": null, // First station id
+                "deliveryTime": null // Delivery time (second)
+              });
+            }
           })
+        } else {
+          //cant process
+          msg.payload = `
+<script type="text/javascript">
+    window.alert("No Product!");
+    window.location.replace('/lexerproject')
+</script>
+`;
+
+          httpOut(RED, node, msg, done);
         }
-      } else {
-        //cant process
-        msg.payload = `
-                            <script type="text/javascript">
-                                window.alert("No Product!");
-                                window.location.replace('/lexerproject')
-                            </script>
-                            `;
 
-        httpOut(RED, node, msg, done);
-      }
+        var renderingParameter = {
+          "iniplans": process, // Initial production order.
+          "goals": null, // Production goal. Is not specified, calculated from initial production order.
+          "patternCondition": {
+            "RenderingType": 0, // Target of pattern. 0: production order
+            "Patterns": [ // index of initial production order.
+              [...Array(process.length).keys()]
+            ]
+          },
+          "start": 0, // Start time.
+          "mode": "Mining" // Rendering output mode. See below.
+        };
 
-      var renderingParameter = {
-        "iniplans": process, // Initial production order.
-        "goals": null, // Production goal. Is not specified, calculated from initial production order.
-        "patternCondition": {
-          "RenderingType": 0, // Target of pattern. 0: production order
-          "Patterns": [ // index of initial production order.
-            [...Array(process.length).keys()]
-          ]
-        },
-        "start": 0, // Start time.
-        "mode": "Mining" // Rendering output mode. See below.
-      };
-
-      var additionalBody = `
+        var additionalBody = `
         </div>
         <div style="padding-top: 15px; text-align: center;">
         <form id="edit" action=/submitexec method="post">
@@ -427,17 +426,17 @@ module.exports = function (RED) {
   </form>
   <div class="loader" style="visibility: hidden;"></div>
         `;
-      body = body + additionalBody;
-      var additionalScript = `
+        body = body + additionalBody;
+        var additionalScript = `
         $('#pvdo-submit-button').on('click', (event)=>{
           $("#step2").attr('class', 'md-step active done')
           $("#step3").attr('class', 'md-step active editable')
           $(".loader").css("visibility", "visible")
         })
         `
-      script = additionalScript + script;
+        script = additionalScript + script;
 
-      style = style + `#vfk-body {
+        style = style + `#vfk-body {
           height: 45vh;
         }
         .loader {
@@ -460,17 +459,17 @@ module.exports = function (RED) {
           100% { transform: rotate(360deg); }
         }
         `;
-      msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 2);
-    }else {
-      msg.payload = utility.htmlTemplate(title, library, style, header, body, script);
-    }
+        msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 2);
+      } else {
+        msg.payload = utility.htmlTemplate(title, library, style, header, body, script);
+      }
       // -------- http out -------- 
       httpOut(RED, node, msg, done);
 
-    // store project information in the node
-    nodeContext = response;
-    this.context().set('nodeContext', nodeContext);
-  });
-}
-RED.nodes.registerType("Project: Information", gdfindiWebapiProjectInfoNode);
+      // store project information in the node
+      nodeContext = response;
+      this.context().set('nodeContext', nodeContext);
+    });
+  }
+  RED.nodes.registerType("Project: Information", gdfindiWebapiProjectInfoNode);
 }
