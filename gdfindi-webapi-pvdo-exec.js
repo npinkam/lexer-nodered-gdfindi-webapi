@@ -24,7 +24,9 @@ module.exports = function (RED) {
       //POST: structure of req.body: {projectId='', editor='info inside the ace editor textarea'}
       var projectId = req.body.projectId;
       var content = req.body.editor;
-
+      console.log(req.body)
+      console.log(projectId)
+      console.log(content)
       var xhr = new XMLHttpRequest();
       xhr.open("POST", utility.gdFindiUrl()+"/api/v1/PVDO/" + projectId, true);
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
@@ -36,6 +38,7 @@ module.exports = function (RED) {
           //send MiningID to pvdo output
           msg.payload.MiningID = response;
           msg.payload.projectId = projectId;
+          console.log(msg.payload)
           node.send(msg);
         }
         //console.log('readystate: '+ this.readyState+'\n status: '+this.status+'\n'+this.responseText+'\n ----------------------')

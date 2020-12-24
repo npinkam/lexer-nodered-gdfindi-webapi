@@ -41,7 +41,7 @@ module.exports = function (RED) {
       //load current project to editor
       var projectId = req.query.projectId;
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", utility.gdFindiUrl()+"/api/v1/projects/" + projectId, false);
+      xhr.open("GET", utility.gdFindiUrl() + "/api/v1/projects/" + projectId, false);
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
       xhr.send();
       var response = xhr.responseText;//JSON.parse(xhr.responseText);
@@ -129,7 +129,7 @@ module.exports = function (RED) {
       var content = req.body.editor;
 
       var xhr = new XMLHttpRequest();
-      xhr.open("PUT", utility.gdFindiUrl()+"/api/v1/projects/" + projectId, true);
+      xhr.open("PUT", utility.gdFindiUrl() + "/api/v1/projects/" + projectId, true);
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
@@ -203,7 +203,7 @@ module.exports = function (RED) {
 
       var projectId = req.query.projectId;
       var xhr = new XMLHttpRequest();
-      xhr.open("DELETE", utility.gdFindiUrl()+"/api/v1/projects/" + projectId, true);
+      xhr.open("DELETE", utility.gdFindiUrl() + "/api/v1/projects/" + projectId, true);
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
       xhr.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 204) {
@@ -249,7 +249,7 @@ module.exports = function (RED) {
     node.on('input', function (msg, done) {
       var projectId = msg.payload;
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", utility.gdFindiUrl()+"/api/v1/projects/" + projectId, false);
+      xhr.open("GET", utility.gdFindiUrl() + "/api/v1/projects/" + projectId, false);
       xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
       xhr.send();
       var response = JSON.parse(xhr.responseText);
@@ -372,64 +372,65 @@ module.exports = function (RED) {
       `;
 
       msg.payload = '';
-      if(htmlTemplate === 'VFK'){
-      // get initplans
-      var hasProductionProcesses = response.hasOwnProperty('productionProcesses');
-      var process = [];
-      if (hasProductionProcesses === true) {
-        response.productionProcesses.forEach(element => {
-          var hasRenderingCondition = response.hasOwnProperty('renderingCondition');
-          var lotsize = null;
-          var processName = element.name;
-          if(hasRenderingCondition == true){
-            response.renderingCondition.productionSchedules[0].orders.forEach(element => {
-              if(element.product == processName){
-                lotsize = element.lotsize;
-              }
-            })
-          }
-          process.push({
-            "productid": processName, //name of process
-            "lotsize": lotsize, // lot size
-            "daytime":null, // Math.floor(Math.random() * 86400), //start time
-            "islot": false, //  Lot
-            "line": null, // Line name
-            "processid": null, // First process id
-            "stationid": null, // First station id
-            "deliveryTime": null // Delivery time (second)
-          });
-        })
-      }else{
-        //cant process
-        msg.payload = 'Cannot Process. Not enough information.';
-        httpOut(RED, node, msg, done);
-        return
-      }
+      if (htmlTemplate === 'VFK') {
+        // get initplans
+        var hasRenderingCondition = response.hasOwnProperty('renderingCondition');
+        var process = [];
+/*         console.log(response.productionProcesses[0])
+        var pd = response.productionProcesses[0];
+        console.log(pd.name) */
+        if (hasRenderingCondition == true) {
+          console.log(response.renderingCondition.productionSchedules[0].orders)
+          response.renderingCondition.productionSchedules[0].orders.forEach(element => {
+              process.push({
+                "productid": element.product, //name of process
+                "lotsize": element.lotsize, // lot size
+                "daytime": null, // Math.floor(Math.random() * 86400), //start time
+                "islot": false, //  Lot
+                "line": null, // Line name
+                "processid": null, // First process id
+                "stationid": null, // First station id
+                "deliveryTime": null // Delivery time (second)
+              });
+          })
+        } else {
+          //cant process
+          msg.payload = `
+<script type="text/javascript">
+    window.alert("No Product!");
+    window.location.replace('/lexerproject')
+</script>
+`;
 
-      var renderingParameter = {
-        "iniplans": process, // Initial production order.
-        "goals": null, // Production goal. Is not specified, calculated from initial production order.
-        "patternCondition": {
-          "RenderingType": 0, // Target of pattern. 0: production order
-          "Patterns": [ // index of initial production order.
-            [...Array(process.length).keys()]
-          ]
-        },
-        "start": 0, // Start time.
-        "mode": "Mining" // Rendering output mode. See below.
-      };
+          httpOut(RED, node, msg, done);
+        }
+
+        var renderingParameter = {
+          "iniplans": process, // Initial production order.
+          "goals": null, // Production goal. Is not specified, calculated from initial production order.
+          "patternCondition": {
+            "RenderingType": 0, // Target of pattern. 0: production order
+            "Patterns": [ // index of initial production order.
+              [...Array(process.length).keys()]
+            ]
+          },
+          "start": 0, // Start time.
+          "mode": "Mining" // Rendering output mode. See below.
+        };
+        console.log(JSON.stringify(renderingParameter))
+        //<textarea name="editor" style="display:none;">${JSON.stringify(renderingParameter)}</textarea>
         var additionalBody = `
         </div>
         <div style="padding-top: 15px; text-align: center;">
         <form id="edit" action=/submitexec method="post">
       <input type="hidden" id="projectId" name="projectId" value=${projectId}>
-      <input type="hidden" id="editor" name="editor" value=${JSON.stringify(renderingParameter)}>
+      <input type="hidden" id="editor" name="editor" value="${JSON.stringify(renderingParameter)}">
       <button type="submit" id='pvdo-submit-button' class="btn btn-primary btn-lg mr-5">Submit to PVDO <i class="fa fa-bar-chart" aria-hidden="true"></i></button>
   </form>
   <div class="loader" style="visibility: hidden;"></div>
         `;
         body = body + additionalBody;
-        var additionalScript =`
+        var additionalScript = `
         $('#pvdo-submit-button').on('click', (event)=>{
           $("#step2").attr('class', 'md-step active done')
           $("#step3").attr('class', 'md-step active editable')
@@ -462,7 +463,7 @@ module.exports = function (RED) {
         }
         `;
         msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 2);
-      }else{
+      } else {
         msg.payload = utility.htmlTemplate(title, library, style, header, body, script);
       }
       // -------- http out -------- 
