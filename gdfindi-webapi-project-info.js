@@ -382,12 +382,12 @@ module.exports = function (RED) {
         if (hasRenderingCondition == true) {
           response.renderingCondition.productionSchedules[0].orders.forEach(element => {
               process.push({
-                "productid": pd.name, //name of process
+                "productid": "Product 1", //name of process
                 "lotsize": element.lotsize, // lot size
                 "daytime": null, // Math.floor(Math.random() * 86400), //start time
                 "islot": false, //  Lot
                 "line": null, // Line name
-                "processid": null, // First process id
+                "processid": 29831, // First process id
                 "stationid": null, // First station id
                 "deliveryTime": null // Delivery time (second)
               });
