@@ -382,7 +382,7 @@ module.exports = function (RED) {
         if (hasRenderingCondition == true) {
           response.renderingCondition.productionSchedules[0].orders.forEach(element => {
               process.push({
-                "productid": pd.name, //name of process
+                "productid": 'Product 1', //name of process
                 "lotsize": element.lotsize, // lot size
                 "daytime": null, // Math.floor(Math.random() * 86400), //start time
                 "islot": false, //  Lot
@@ -416,7 +416,7 @@ module.exports = function (RED) {
           "start": 0, // Start time.
           "mode": "Mining" // Rendering output mode. See below.
         };
-        console.log(renderingParameter)
+        console.log(JSON.stringify(renderingParameter))
         var additionalBody = `
         </div>
         <div style="padding-top: 15px; text-align: center;">
