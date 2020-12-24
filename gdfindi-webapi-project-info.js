@@ -383,7 +383,7 @@ module.exports = function (RED) {
           console.log(response.renderingCondition.productionSchedules[0].orders)
           response.renderingCondition.productionSchedules[0].orders.forEach(element => {
               process.push({
-                "productid": element.product, //name of process
+                "productid": "FESTO Machine", //name of process
                 "lotsize": element.lotsize, // lot size
                 "daytime": null, // Math.floor(Math.random() * 86400), //start time
                 "islot": false, //  Lot
