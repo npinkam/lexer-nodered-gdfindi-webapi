@@ -122,7 +122,7 @@ module.exports = function (RED) {
                     console.log(authorization)
                     //msg.payload.authorization => need {}
                     node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: true, cookies: { authorization } })
-                } catch {
+                } catch(err){
                     //window.alert("${err.body.error_description}");
                     var error = `
                 <script type="text/javascript">
