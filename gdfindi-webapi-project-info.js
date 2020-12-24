@@ -376,7 +376,7 @@ module.exports = function (RED) {
         // get initplans
         var hasRenderingCondition = response.hasOwnProperty('renderingCondition');
         var process = [];
-        console.log(response.productionProcesses)
+        console.log(response.productionProcesses[0])
         if (hasRenderingCondition == true) {
           response.renderingCondition.productionSchedules[0].orders.forEach(element => {
               process.push({
