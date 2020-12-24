@@ -108,7 +108,7 @@ module.exports = function (RED) {
             //simple-oauth2
             var username = req.body.username;
             var password = req.body.password;
-
+            const client = new ResourceOwnerPassword(config);
             const tokenParams = {
                 username: username,
                 password: password,
@@ -116,7 +116,6 @@ module.exports = function (RED) {
             async function run() {
                 try {
                     process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
-                    const client = new ResourceOwnerPassword(config);
                     const accessToken = await client.getToken(tokenParams, { json: true })
                     var authorization = accessToken.token.token_type + ' ' + accessToken.token.access_token;
                     console.log(authorization)
