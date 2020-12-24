@@ -405,7 +405,7 @@ module.exports = function (RED) {
         }
 
         var renderingParameter = {
-          "iniplans": JSON.stringify(process), // Initial production order.
+          "iniplans": process, // Initial production order.
           "goals": null, // Production goal. Is not specified, calculated from initial production order.
           "patternCondition": {
             "RenderingType": 0, // Target of pattern. 0: production order
