@@ -150,7 +150,7 @@ module.exports = function (RED) {
         if (totalRow > 6)
           var chartHeightWithLimit = 240;
         else
-          var chartHeightWithLimit = totalRow * 30
+          var chartHeightWithLimit = totalRow * 35
 
         var title = `GD.findi Gantt Chart`
         var library = `
