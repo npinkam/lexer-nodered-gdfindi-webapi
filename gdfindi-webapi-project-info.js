@@ -377,12 +377,12 @@ module.exports = function (RED) {
         var hasRenderingCondition = response.hasOwnProperty('renderingCondition');
         var process = [];
         console.log(response.productionProcesses[0])
-        var productionProcesses = response.productionProcesses[0];
-        console.log(productionProcesses.name)
+        var pd = response.productionProcesses[0];
+        console.log(pd.name)
         if (hasRenderingCondition == true) {
           response.renderingCondition.productionSchedules[0].orders.forEach(element => {
               process.push({
-                "productid": productionProcesses.name, //name of process
+                "productid": pd.name, //name of process
                 "lotsize": element.lotsize, // lot size
                 "daytime": null, // Math.floor(Math.random() * 86400), //start time
                 "islot": false, //  Lot
