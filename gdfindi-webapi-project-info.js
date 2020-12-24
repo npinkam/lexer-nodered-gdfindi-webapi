@@ -383,6 +383,7 @@ module.exports = function (RED) {
           var lotsize = null;
           var processName = element.name;
           if(hasRenderingCondition == true){
+            console.log(response.renderingCondition.productionSchedules[0].orders)
             response.renderingCondition.productionSchedules[0].orders.forEach(element => {
               if(element.product == processName){
                 lotsize = element.lotsize;
