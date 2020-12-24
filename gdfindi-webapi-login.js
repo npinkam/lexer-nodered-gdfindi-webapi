@@ -87,7 +87,8 @@ module.exports = function (RED) {
                 }).catch(err => {
                     var error = `
                     <script type="text/javascript">
-                        window.alert("${err.body.error_description}");
+                        //window.alert("${err.body.error_description}");
+                        window.alert("${err}");
                         window.location.replace('/lexerproject')
                     </script>
                     `;
