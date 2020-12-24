@@ -26,7 +26,7 @@ module.exports = function (RED) {
             var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
 
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://precom.gdfindi.pro/api/v1/PVDO", false);
+            xhr.open("GET", utility.gdFindiUrl()+"v1/PVDO", false);
             xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
             xhr.send();
             var response = JSON.parse(xhr.responseText);
@@ -119,7 +119,7 @@ module.exports = function (RED) {
             var MiningID = req.query.MiningID;
 
             var xhr = new XMLHttpRequest();
-            xhr.open("PUT", `https://precom.gdfindi.pro/api/v1/PVDO/${MiningID}/Cancel`, true);
+            xhr.open("PUT", utility.gdFindiUrl()+`v1/PVDO/${MiningID}/Cancel`, true);
             xhr.setRequestHeader('Authorization', req.cookies.authorization);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };

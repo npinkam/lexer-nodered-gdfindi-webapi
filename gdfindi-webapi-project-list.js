@@ -219,7 +219,7 @@ module.exports = function (RED) {
       var content = req.body.editor;
 
       var xhr = new XMLHttpRequest();
-      xhr.open("POST", "https://precom.gdfindi.pro/api/v1/projects/", false);
+      xhr.open("POST", utility.gdFindiUrl()+"v1/projects/", false);
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };

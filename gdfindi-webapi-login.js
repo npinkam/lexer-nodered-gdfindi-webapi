@@ -72,7 +72,7 @@ module.exports = function (RED) {
             var msgid = RED.util.generateId();
             res._msgid = msgid;
             var lexerAuth = new ClientOAuth2({
-                accessTokenUri: "https://precom.gdfindi.pro/api/token",
+                accessTokenUri: utility.gdFindiUrl()+"token",
             });
             
             var username = req.body.username;
