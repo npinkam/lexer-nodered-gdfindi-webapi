@@ -40,7 +40,10 @@ module.exports = function (RED) {
       xhr.open("GET", "https://precom.gdfindi.pro/api/v1/projects/", false);
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
       xhr.send();
-      var response = JSON.parse(xhr.responseText);
+      var response = xhr.responseText;
+      console.log(response)
+      //var response = JSON.parse(xhr.responseText);
+      response = JSON.parse(response)
 
       var title = 'GD.findi Project List'
       var library = `

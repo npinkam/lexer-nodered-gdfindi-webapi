@@ -118,7 +118,6 @@ module.exports = function (RED) {
                     process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
                     const accessToken = await client.getToken(tokenParams, { json: true })
                     var authorization = accessToken.token.token_type + ' ' + accessToken.token.access_token;
-                    console.log(authorization)
                     //msg.payload.authorization => need {}
                     node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: true, cookies: { authorization } })
                 } catch(err){
