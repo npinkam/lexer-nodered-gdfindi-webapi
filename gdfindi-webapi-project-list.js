@@ -37,7 +37,7 @@ module.exports = function (RED) {
       console.log(req.cookies.authorization)
       // add codeWhenReceivePayload
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", "https://precom.gdfindi.pro/api/v1/projects/", false);
+      xhr.open("GET", utility.gdFindiUrl()+"/api/v1/projects/", false);
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
       xhr.send();
       var response = xhr.responseText;
