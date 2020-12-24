@@ -148,7 +148,7 @@ module.exports = function (RED) {
         var payload = JSON.stringify(arrayToHtml);
         //google charts
         if (totalRow > 6)
-          var chartHeightWithLimit = 210;
+          var chartHeightWithLimit = 240;
         else
           var chartHeightWithLimit = totalRow * 30
 
