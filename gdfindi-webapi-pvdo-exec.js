@@ -24,6 +24,7 @@ module.exports = function (RED) {
       //POST: structure of req.body: {projectId='', editor='info inside the ace editor textarea'}
       var projectId = req.body.projectId;
       var content = req.body.editor;
+      console.log(req.body)
       console.log(projectId)
       console.log(content)
       /* var xhr = new XMLHttpRequest();
