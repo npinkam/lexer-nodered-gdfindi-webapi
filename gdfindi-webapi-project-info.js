@@ -380,7 +380,7 @@ module.exports = function (RED) {
         var pd = response.productionProcesses[0];
         console.log(pd.name) */
         if (hasRenderingCondition == true) {
-          console.log(response.renderingCondition.productionSchedules[0].orders)
+
           response.renderingCondition.productionSchedules[0].orders.forEach(element => {
               process.push({
                 "productid": element.product, //name of process
@@ -417,7 +417,7 @@ module.exports = function (RED) {
           "start": 0, // Start time.
           "mode": "Mining" // Rendering output mode. See below.
         };
-        console.log(JSON.stringify(renderingParameter))
+
         var additionalBody = `
         </div>
         <div style="padding-top: 15px; text-align: center;">

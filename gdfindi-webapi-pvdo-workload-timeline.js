@@ -63,7 +63,6 @@ module.exports = function (RED) {
 
       } else {
         //workLoadChart
-        console.log(response);
         var result = response.results[0].statisticalResult.workLoadChartOfStation;
         //JSON
         var outputJSON = {};
@@ -72,7 +71,6 @@ module.exports = function (RED) {
           str = str.split('@');
           //if there are 4 elements -> have extra work
           //if there are 3 elements -> have normal work
-          console.log(str)
           if (str.length === 4) {
             str = [str[0], str[2], str[3]]
           }
@@ -92,7 +90,6 @@ module.exports = function (RED) {
         //odd first value = row header
         var arrayToHtml = [];
         var totalRow = result.length;
-        console.log(result)
         for (var i = 0; i < result.length; i += 2) {
           var arrayHeader, timeline, cumTimeline;
           var station = result[i + 1][0];
@@ -146,7 +143,6 @@ module.exports = function (RED) {
           }
           outputJSON.stations.push(stationJSON);
         }
-        console.log(outputJSON)
         var outputJSONStr = JSON.stringify(outputJSON);
 
         var payload = JSON.stringify(arrayToHtml);
