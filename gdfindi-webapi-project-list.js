@@ -34,7 +34,6 @@ module.exports = function (RED) {
 
       var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
 
-      console.log(req.cookies.authorization)
       // add codeWhenReceivePayload
       var xhr = new XMLHttpRequest();
       xhr.open("GET", utility.gdFindiUrl()+"/api/v1/projects/", false);
