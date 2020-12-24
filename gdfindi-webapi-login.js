@@ -5,7 +5,7 @@ module.exports = function (RED) {
     const wrapper = require('./lib/wrapper.js');
     //const ClientOAuth2 = require('client-oauth2');
     const utility = require('./lib/utility.js');
-    const config = {
+    const configOauth2 = {
         client: {
         },
         auth: {
@@ -108,7 +108,7 @@ module.exports = function (RED) {
             //simple-oauth2
             var username = req.body.username;
             var password = req.body.password;
-            const client = new ResourceOwnerPassword(config);
+            const client = new ResourceOwnerPassword(configOauth2);
             const tokenParams = {
                 username: username,
                 password: password,
