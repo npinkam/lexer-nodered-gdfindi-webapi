@@ -77,7 +77,7 @@ module.exports = function (RED) {
             console.log(utility.gdFindiUrl()+"token")
             var username = req.body.username;
             var password = req.body.password;
-
+            process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
             lexerAuth.owner.getToken(username, password)
                 .then(function (user) {
                     //user=> { accessToken: '...', tokenType: 'bearer', ... }
