@@ -36,6 +36,7 @@ module.exports = function (RED) {
           //send MiningID to pvdo output
           msg.payload.MiningID = response;
           msg.payload.projectId = projectId;
+          console.log(msg.payload)
           node.send(msg);
         }
         //console.log('readystate: '+ this.readyState+'\n status: '+this.status+'\n'+this.responseText+'\n ----------------------')
