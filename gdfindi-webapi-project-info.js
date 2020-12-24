@@ -424,7 +424,7 @@ module.exports = function (RED) {
         <div style="padding-top: 15px; text-align: center;">
         <form id="edit" action=/submitexec method="post">
       <input type="hidden" id="projectId" name="projectId" value=${projectId}>
-      <input type="hidden" id="editor" value="${JSON.stringify(renderingParameter)}">
+      <input type="hidden" id="editor" name="editor" value="${JSON.stringify(renderingParameter)}">
       <button type="submit" id='pvdo-submit-button' class="btn btn-primary btn-lg mr-5">Submit to PVDO <i class="fa fa-bar-chart" aria-hidden="true"></i></button>
   </form>
   <div class="loader" style="visibility: hidden;"></div>
