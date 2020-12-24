@@ -382,7 +382,7 @@ module.exports = function (RED) {
         if (hasRenderingCondition == true) {
           response.renderingCondition.productionSchedules[0].orders.forEach(element => {
               process.push({
-                "productid": "FESTO Machine", //name of process
+                "productid": "FESTO\ Machine", //name of process
                 "lotsize": 1, // lot size
                 "daytime": null, // Math.floor(Math.random() * 86400), //start time
                 "islot": false, //  Lot
@@ -405,7 +405,7 @@ module.exports = function (RED) {
         }
 
         var renderingParameter = {
-          "iniplans": process, // Initial production order.
+          "iniplans": JSON.stringify(process), // Initial production order.
           "goals": null, // Production goal. Is not specified, calculated from initial production order.
           "patternCondition": {
             "RenderingType": 0, // Target of pattern. 0: production order
