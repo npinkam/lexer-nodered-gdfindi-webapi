@@ -46,6 +46,7 @@ module.exports = function (RED) {
     httpIn(RED, node, this.urlSubmitExec, this.methodSubmitExec, this.callbackSubmitExec);
 
     // add codeBeforeReceivePayload
+    //need to fix this function
     node.on('input', function (msg, done) {
       var daytime = msg.payload.daytime;
       var payload = msg.payload.data;
@@ -67,6 +68,7 @@ module.exports = function (RED) {
               }
             })
           }
+          //fix this
           process.push({
             "productid": processName, //name of process
             "lotsize": lotsize, // lot size
