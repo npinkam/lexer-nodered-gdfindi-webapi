@@ -85,9 +85,9 @@ module.exports = function (RED) {
                     //msg.payload.authorization => need {}
                     node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: true, cookies: { authorization } })
                 }).catch(err => {
+                    //window.alert("${err.body.error_description}");
                     var error = `
                     <script type="text/javascript">
-                        //window.alert("${err.body.error_description}");
                         window.alert("${err}");
                         window.location.replace('/lexerproject')
                     </script>
