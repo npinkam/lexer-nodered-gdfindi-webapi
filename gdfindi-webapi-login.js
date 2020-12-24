@@ -119,6 +119,7 @@ module.exports = function (RED) {
                     const client = new ResourceOwnerPassword(config);
                     const accessToken = await client.getToken(tokenParams, { json: true })
                     var authorization = accessToken.token.token_type + ' ' + accessToken.token.access_token;
+                    console.log(authorization)
                     //msg.payload.authorization => need {}
                     node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: true, cookies: { authorization } })
                 } catch {
