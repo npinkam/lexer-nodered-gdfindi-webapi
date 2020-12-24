@@ -253,7 +253,7 @@ module.exports = function (RED) {
       xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
       xhr.send();
       var response = JSON.parse(xhr.responseText);
-      console.log(response)
+      console.log(response.renderingCondition)
 
       var enableEditText = '';
       var enableDeleteText = '';
