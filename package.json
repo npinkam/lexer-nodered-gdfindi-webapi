@@ -10,7 +10,8 @@
   "dependencies": {
     "tableify": "^1.1.0",
     "xmlhttprequest": "^1.8.0",
-    "client-oauth2": "^4.3.3"
+    "client-oauth2": "^4.3.3",
+    "simple-oauth2": "^4.2.0"
   },
 "node-red" : {
     "nodes": {
