@@ -382,12 +382,12 @@ module.exports = function (RED) {
         if (hasRenderingCondition == true) {
           response.renderingCondition.productionSchedules[0].orders.forEach(element => {
               process.push({
-                "productid": "FESTO\ Machine", //name of process
-                "lotsize": 1, // lot size
+                "productid": pd.name, //name of process
+                "lotsize": element.lotsize, // lot size
                 "daytime": null, // Math.floor(Math.random() * 86400), //start time
                 "islot": false, //  Lot
                 "line": null, // Line name
-                "processid": 29831, // First process id
+                "processid": null, // First process id
                 "stationid": null, // First station id
                 "deliveryTime": null // Delivery time (second)
               });
@@ -405,7 +405,7 @@ module.exports = function (RED) {
         }
 
         var renderingParameter = {
-          "iniplans": JSON.stringify(process), // Initial production order.
+          "iniplans": process, // Initial production order.
           "goals": null, // Production goal. Is not specified, calculated from initial production order.
           "patternCondition": {
             "RenderingType": 0, // Target of pattern. 0: production order
@@ -416,7 +416,7 @@ module.exports = function (RED) {
           "start": 0, // Start time.
           "mode": "Mining" // Rendering output mode. See below.
         };
-        console.log(JSON.stringify(renderingParameter))
+        console.log(renderingParameter)
         var additionalBody = `
         </div>
         <div style="padding-top: 15px; text-align: center;">
