@@ -69,15 +69,15 @@ module.exports = function (RED) {
         var outputJSON = {};
         outputJSON.stations = [];
         var taskSplit = function (str) {
-          str = str.split(/[\s@]+/);
+          str = str.split('@');
           //if there are 4 elements -> have extra work
           //if there are 3 elements -> have normal work
           console.log(str)
           if (str.length === 4) {
             str = [str[0], str[2], str[3]]
           }
-          let middleStr = str[1].split(/[\s.]+/);
-          let middleLastStr = middleStr[1].split(/[\s:]+/)
+          let middleStr = str[1].split('.');
+          let middleLastStr = middleStr[1].split(':')
           var newStr = [str[0], middleStr[0], middleLastStr[0], middleLastStr[1], str[2]]
           return newStr
         }
