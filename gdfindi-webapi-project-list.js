@@ -40,10 +40,7 @@ module.exports = function (RED) {
       xhr.open("GET", utility.gdFindiUrl()+"/api/v1/projects/", false);
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
       xhr.send();
-      var response = xhr.responseText;
-      console.log(response)
-      //var response = JSON.parse(xhr.responseText);
-      response = JSON.parse(response)
+      var response = JSON.parse(xhr.responseText);
 
       var title = 'GD.findi Project List'
       var library = `
