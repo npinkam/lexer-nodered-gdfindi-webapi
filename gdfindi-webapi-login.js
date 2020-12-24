@@ -113,25 +113,28 @@ module.exports = function (RED) {
                 username: username,
                 password: password,
             };
-            process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
-            const client = new ResourceOwnerPassword(config);
-            client.getToken(tokenParams, { json: true }).then(function (accessToken) {
-                var authorization = accessToken.token.token_type + ' ' + accessToken.token.access_token;
-                //msg.payload.authorization => need {}
-                node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: true, cookies: { authorization } })
-            }).catch(err => {
-                //window.alert("${err.body.error_description}");
-                var error = `
+            async function run() {
+                try {
+                    process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+                    const client = new ResourceOwnerPassword(config);
+                    const accessToken = await client.getToken(tokenParams, { json: true })
+                    var authorization = accessToken.token.token_type + ' ' + accessToken.token.access_token;
+                    //msg.payload.authorization => need {}
+                    node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: true, cookies: { authorization } })
+                } catch {
+                    //window.alert("${err.body.error_description}");
+                    var error = `
                 <script type="text/javascript">
                     window.alert("${err}");
                     window.location.replace('/lexerproject')
                 </script>
                 `;
 
-                var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: error };
-                httpOut(RED, node, msg, done);
-            });
-
+                    var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: error };
+                    httpOut(RED, node, msg, done);
+                }
+            }
+            run();
         }
 
         // call httpInput library
