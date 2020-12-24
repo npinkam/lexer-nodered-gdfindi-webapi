@@ -63,6 +63,7 @@ module.exports = function (RED) {
 
       } else {
         //workLoadChart
+        console.log(response);
         var result = response.results[0].statisticalResult.workLoadChartOfStation;
         //JSON
         var outputJSON = {};
