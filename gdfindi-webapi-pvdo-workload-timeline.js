@@ -22,7 +22,7 @@ module.exports = function (RED) {
         var header = `<a href="/projectlist">Project List</a>`;
       }
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", utility.gdFindiUrl()+`v1/PVDO/${MiningID}/Results`, false);
+      xhr.open("GET", utility.gdFindiUrl()+`/api/v1/PVDO/${MiningID}/Results`, false);
       xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
       xhr.send();
       var response = JSON.parse(xhr.responseText);
@@ -37,7 +37,7 @@ module.exports = function (RED) {
 
       while (response.completed == false) {
         xhr = new XMLHttpRequest();
-        xhr.open("GET", utility.gdFindiUrl()+`v1/PVDO/${MiningID}/Results`, false);
+        xhr.open("GET", utility.gdFindiUrl()+`/api/v1/PVDO/${MiningID}/Results`, false);
         xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
         xhr.send();
         response = JSON.parse(xhr.responseText);

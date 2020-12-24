@@ -3,8 +3,17 @@ module.exports = function (RED) {
     const httpIn = require('./lib/httpIn.js');
     const httpOut = require('./lib/httpOut.js');
     const wrapper = require('./lib/wrapper.js');
-    const ClientOAuth2 = require('client-oauth2');
+    //const ClientOAuth2 = require('client-oauth2');
     const utility = require('./lib/utility.js');
+    const config = {
+        client: {
+        },
+        auth: {
+            tokenHost: utility.gdFindiUrl(),
+            tokenPath: '/api/token'
+        }
+    };
+    const { ClientCredentials, ResourceOwnerPassword, AuthorizationCode } = require('simple-oauth2');
 
     function gdfindiWebapiLoginNode(config) {
         RED.nodes.createNode(this, config);
@@ -71,13 +80,12 @@ module.exports = function (RED) {
         this.callbackAuth = function (req, res, done) {
             var msgid = RED.util.generateId();
             res._msgid = msgid;
-            var lexerAuth = new ClientOAuth2({
-                accessTokenUri: utility.gdFindiUrl()+"token",
+            /* var lexerAuth = new ClientOAuth2({
+                accessTokenUri: utility.gdFindiUrl()+"/api/token",
             });
-            console.log(utility.gdFindiUrl()+"token")
+            console.log(utility.gdFindiUrl()+"/api/token")
             var username = req.body.username;
             var password = req.body.password;
-            process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
             lexerAuth.owner.getToken(username, password)
                 .then(function (user) {
                     //user=> { accessToken: '...', tokenType: 'bearer', ... }
@@ -95,7 +103,34 @@ module.exports = function (RED) {
 
                     var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: error };
                     httpOut(RED, node, msg, done);
-                });
+                }); */
+
+            //simple-oauth2
+            var username = req.body.username;
+            var password = req.body.password;
+
+            const tokenParams = {
+                username: username,
+                password: password,
+            };
+            process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+            const accessToken = client.getToken(tokenParams, { json: true }).then(function (accessToken) {
+                var authorization = accessToken.token.token_type + ' ' + accessToken.token.access_token;
+                //msg.payload.authorization => need {}
+                node.send({ _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: true, cookies: { authorization } })
+            }).catch(err => {
+                //window.alert("${err.body.error_description}");
+                var error = `
+                <script type="text/javascript">
+                    window.alert("${err}");
+                    window.location.replace('/lexerproject')
+                </script>
+                `;
+
+                var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: error };
+                httpOut(RED, node, msg, done);
+            });
+
         }
 
         // call httpInput library

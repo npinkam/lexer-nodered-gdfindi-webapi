@@ -41,7 +41,7 @@ module.exports = function (RED) {
       //load current project to editor
       var projectId = req.query.projectId;
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", utility.gdFindiUrl()+"v1/projects/" + projectId, false);
+      xhr.open("GET", utility.gdFindiUrl()+"/api/v1/projects/" + projectId, false);
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
       xhr.send();
       var response = xhr.responseText;//JSON.parse(xhr.responseText);
@@ -129,7 +129,7 @@ module.exports = function (RED) {
       var content = req.body.editor;
 
       var xhr = new XMLHttpRequest();
-      xhr.open("PUT", utility.gdFindiUrl()+"v1/projects/" + projectId, true);
+      xhr.open("PUT", utility.gdFindiUrl()+"/api/v1/projects/" + projectId, true);
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
@@ -203,7 +203,7 @@ module.exports = function (RED) {
 
       var projectId = req.query.projectId;
       var xhr = new XMLHttpRequest();
-      xhr.open("DELETE", utility.gdFindiUrl()+"v1/projects/" + projectId, true);
+      xhr.open("DELETE", utility.gdFindiUrl()+"/api/v1/projects/" + projectId, true);
       xhr.setRequestHeader('Authorization', req.cookies.authorization);
       xhr.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 204) {
@@ -249,7 +249,7 @@ module.exports = function (RED) {
     node.on('input', function (msg, done) {
       var projectId = msg.payload;
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", utility.gdFindiUrl()+"v1/projects/" + projectId, false);
+      xhr.open("GET", utility.gdFindiUrl()+"/api/v1/projects/" + projectId, false);
       xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
       xhr.send();
       var response = JSON.parse(xhr.responseText);
