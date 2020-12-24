@@ -22,7 +22,7 @@ module.exports = function (RED) {
         var header = `<a href="/projectlist">Project List</a>`;
       }
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", utility.gdFindiUrl()+`/api/v1/PVDO/${MiningID}/Results`, false);
+      xhr.open("GET", utility.gdFindiUrl() + `/api/v1/PVDO/${MiningID}/Results`, false);
       xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
       xhr.send();
       var response = JSON.parse(xhr.responseText);
@@ -37,7 +37,7 @@ module.exports = function (RED) {
 
       while (response.completed == false) {
         xhr = new XMLHttpRequest();
-        xhr.open("GET", utility.gdFindiUrl()+`/api/v1/PVDO/${MiningID}/Results`, false);
+        xhr.open("GET", utility.gdFindiUrl() + `/api/v1/PVDO/${MiningID}/Results`, false);
         xhr.setRequestHeader('Authorization', msg.req.cookies.authorization);
         xhr.send();
         response = JSON.parse(xhr.responseText);
@@ -144,9 +144,13 @@ module.exports = function (RED) {
           outputJSON.stations.push(stationJSON);
         }
         var outputJSONStr = JSON.stringify(outputJSON);
-        
+
         var payload = JSON.stringify(arrayToHtml);
         //google charts
+        if (totalRow > 6)
+          var chartHeightWithLimit = 180;
+        else
+          var chartHeightWithLimit = totalRow * 30
 
         var title = `GD.findi Gantt Chart`
         var library = `
@@ -249,7 +253,7 @@ module.exports = function (RED) {
             }
             //document.getElementById('payload_div').innerHTML=data;
             dataTable.addRows(data);
-            var chartHeight = ${JSON.stringify(totalRow/2)} * 60;
+            var chartHeight = ${chartHeightWithLimit};
             var options = {
                 height: chartHeight,
                 timeline: { colorByRowLabel: true },
