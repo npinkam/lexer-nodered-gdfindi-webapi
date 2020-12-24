@@ -380,7 +380,7 @@ module.exports = function (RED) {
         if (hasRenderingCondition == true) {
           response.renderingCondition.productionSchedules[0].orders.forEach(element => {
               process.push({
-                "productid": response.productionProcesses.name, //name of process
+                "productid": response.productionProcesses[0].name, //name of process
                 "lotsize": element.lotsize, // lot size
                 "daytime": null, // Math.floor(Math.random() * 86400), //start time
                 "islot": false, //  Lot
