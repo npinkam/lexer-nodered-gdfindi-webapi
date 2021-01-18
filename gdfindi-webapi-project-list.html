@@ -1,0 +1,41 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Project: List',{
+        category: 'lexer-function',
+        color: '#a6bbcf',
+        defaults: {
+            enableCreate: {value: true},
+            htmlTemplate: {value: ""}
+},
+        inputs:1,
+        outputs:1,
+        icon: "file.png",
+        label: function() {
+            return "Project List";
+        }
+    });
+</script>
+
+<style>
+    [type="checkbox"]
+{
+    vertical-align:middle;
+}
+</style>
+
+<script type="text/html" data-template-name="Project: List">
+    <div class="form-row">
+        <label for="node-input-enableCreate" style="width:70%">
+        <input type="checkbox" id="node-input-enableCreate" style="display:inline-block; width:22px; vertical-align:top;">  Enable create new project
+        </label>
+        <br/><br/>
+        <label for="node-input-htmlTemplate" style="width:70%">Select HTML Template: </label>
+            <select name="node-input-htmlTemplate" id="node-input-htmlTemplate">
+                <option value="default" selected>Default</option>
+                <option value="VFK">VFK Template</option>
+              </select> 
+    </div>
+</script>
+
+<script type="text/html" data-help-name="Project: List">
+    <p>Project: List</p>
+</script>

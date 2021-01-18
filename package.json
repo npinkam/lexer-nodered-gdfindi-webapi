@@ -1,0 +1,27 @@
+{
+  "name": "lexer-nodered-gdfindi-webapi",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tableify": "^1.1.0",
+    "xmlhttprequest": "^1.8.0",
+    "client-oauth2": "^4.3.3",
+    "simple-oauth2": "^4.2.0"
+  },
+"node-red" : {
+    "nodes": {
+        "Login": "gdfindi-webapi-login.js",
+        "Project: List": "gdfindi-webapi-project-list.js",
+        "Project: Informatiion": "gdfindi-webapi-project-info.js",
+        "PVDO: List": "gdfindi-webapi-pvdo-list.js",
+        "PVDO: Request Rendering": "gdfindi-webapi-pvdo-exec.js",
+        "PVDO: Gantt Chart": "gdfindi-webapi-pvdo-gantt-chart.js",
+        "PVDO: Workload Timeline": "gdfindi-webapi-pvdo-workload-timeline.js"
+    }
+}
+}
