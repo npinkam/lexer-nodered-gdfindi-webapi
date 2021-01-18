@@ -10,7 +10,143 @@ module.exports = function (RED) {
     var node = this;
     this.htmlTemplate = config.htmlTemplate;
     var htmlTemplate = config.htmlTemplate;
+    var arrayToHtml = [];
 
+    this.url = "/workloadgantt";
+    this.method = "get";
+    this.callback = function (req, res, done) {
+      /** mandatory **/
+      var msgid = RED.util.generateId();
+      res._msgid = msgid;
+      var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
+      /** mandatory **/
+      var payload2 = JSON.stringify(arrayToHtml);
+
+      var htmlText =`
+      <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GD.findi Gantt Chart</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.6.8/beautify.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+
+<style>
+body {
+    font-family: 'Roboto';
+}
+
+                .title {
+                  font-size: 1.67em;
+                  font-weight: bold;
+                  text-align: center;
+                }
+                #chart_div {
+                  width:100%;
+                }
+                
+</style>
+</head>
+<body>
+<style>
+#main_title{
+    font-size: 2.5em;
+    font-weight: bold;
+    padding: 20px 0;
+    text-align: center;
+  }
+html {
+	-webkit-font-smoothing: antialiased!important;
+	-moz-osx-font-smoothing: grayscale!important;
+	-ms-font-smoothing: antialiased!important;
+}
+body {
+  background-color: rgb(0,0,0,0.005);
+}
+
+                .title {
+                  font-size: 1.67em;
+                  font-weight: bold;
+                  text-align: center;
+                }
+                #chart_div {
+                  width:100%;
+                }
+                
+</style>
+
+                <div id="payload_div"></div>
+                <div class="title">Workload Gantt Chart</div>
+                <div id="chart_div"></div>
+                
+<script>
+
+        google.charts.load("current", {packages:["timeline"]});
+        google.charts.setOnLoadCallback(drawChart);
+        
+        function drawChart() {
+          var today = new Date();
+          var todayStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+          var timeStr = function (sec) {
+              return new Date(todayStr + ' ' + new Date(sec * 1000).toISOString().substr(11, 8))
+          };
+
+    var container = document.getElementById('chart_div');
+    var chart = new google.visualization.Timeline(container);
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn({ type: 'string', id: 'Station' });
+    dataTable.addColumn({ type: 'string', id: 'dummy bar label' });
+    dataTable.addColumn({ type: 'string', role: 'tooltip' });
+    dataTable.addColumn({ type: 'date', id: 'Start' });
+    dataTable.addColumn({ type: 'date', id: 'End' });
+
+            var data = ${payload2}
+            //convert the date to an acceptable format
+            for (var i = 0; i < data.length; i++) {
+                data[i][3] = timeStr(data[i][3]);
+                data[i][4] = timeStr(data[i][4]);
+            }
+            //document.getElementById('payload_div').innerHTML=data;
+            dataTable.addRows(data);
+            var chartHeight = 500;
+            var options = {
+                height: chartHeight,
+                timeline: { colorByRowLabel: true },
+                labelStyle: {
+                        fontSize: 13
+                } ,
+                colors: ['#111e6c','#1d2951', '#597387', '#003152', 
+                '#000080', '#0e4d92', '#1034a6', '#0080ff', '#0f52ba', 
+                '#008ecc', '#6593f5', '#4c516d', '#008081', '#73c2fb', 
+                '#7285a5', '#4f97a3', '#57a0d3', '#4682b4', '#81d8d0', 
+                '#89cff0', '#588bae', '#7ef9ff', '#95c8d8', '#b0dfe5', 
+                '#3fe0d0']
+            };
+          
+              chart.draw(dataTable, options);
+        }
+                
+</script>
+</body>
+</html>                                		
+
+      `
+        msg.payload=htmlText;
+        httpOut(RED, node, msg, done);
+    }
+    httpIn(RED, node, this.url, this.method, this.callback);
     // add codeBeforeReceivePayload
     node.on("input", function (msg, done) {
       var MiningID = msg.payload.MiningID;
@@ -120,7 +256,16 @@ module.exports = function (RED) {
         //even array = header
         //odd array = value
         //odd first value = row header
-        var arrayToHtml = [];
+        arrayToHtml = [];
+        var tableInfo = [
+          { type: "string", id: "Station" },
+          { type: "string", id: "dummy bar label" },
+          { type: "string", role: "tooltip" },
+          { type: "date", id: "Start" },
+          { type: "date", id: "End" },
+        ];
+        var submitData = [];
+        //submitData.push(tableInfo);
         var totalRow = result.length;
         for (var i = 0; i < result.length; i += 2) {
           var arrayHeader, timeline, cumTimeline;
@@ -152,6 +297,8 @@ module.exports = function (RED) {
           //console.log(timeline)
           //console.log(cumTimeline)
           var endTime = [];
+                  //send data to the next node
+
           for (var j = 0; j < arrayHeader.length; j++) {
             let startTime = parseInt(cumTimeline[j]) - parseInt(timeline[j]);
             let array = [
@@ -163,7 +310,7 @@ module.exports = function (RED) {
             ];
             //console.log(array);
             arrayToHtml.push(array);
-
+            submitData.push(array);
             //JSON
             var str = taskSplit(arrayHeader[j]);
             workArray.push({
@@ -185,7 +332,8 @@ module.exports = function (RED) {
         }
         var outputJSONStr = JSON.stringify(outputJSON);
 
-        var payload = JSON.stringify(arrayToHtml);
+        payload = JSON.stringify(arrayToHtml);
+        console.log(payload)
         //google charts
         if (totalRow > 6) var chartHeightWithLimit = 240;
         else var chartHeightWithLimit = totalRow * 35;
@@ -355,9 +503,9 @@ module.exports = function (RED) {
               dataType: "json"
             });
             $("#submission_state").text("Successfully transfer JSON to the server!\\nRestart the process in 5 seconds...")
-            setTimeout(()=>{
+            /*setTimeout(()=>{
               window.location='/projectlist'
-            }, 5000);
+            }, 5000);*/
           `;
           script = script + additionalScript;
           msg.payload = utility.htmlVFKTemplate(
@@ -381,19 +529,7 @@ module.exports = function (RED) {
           );
         }
         httpOut(RED, node, msg, done);
-
-        //send data to the next node
         msg.payload = "";
-        tableInfo = [
-          { type: "string", id: "Station" },
-          { type: "string", id: "dummy bar label" },
-          { type: "string", role: "tooltip" },
-          { type: "date", id: "Start" },
-          { type: "date", id: "End" },
-        ];
-        var submitData = [];
-        submitData.push(tableInfo);
-        submitData.push(arrayToHtml);
         submitData = JSON.stringify(submitData);
         msg.payload = submitData;
         node.send(msg);
