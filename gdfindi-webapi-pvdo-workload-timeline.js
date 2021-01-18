@@ -503,9 +503,9 @@ body {
               dataType: "json"
             });
             $("#submission_state").text("Successfully transfer JSON to the server!\\nRestart the process in 5 seconds...")
-            /*setTimeout(()=>{
+            setTimeout(()=>{
               window.location='/projectlist'
-            }, 5000);*/
+            }, 5000);
           `;
           script = script + additionalScript;
           msg.payload = utility.htmlVFKTemplate(
