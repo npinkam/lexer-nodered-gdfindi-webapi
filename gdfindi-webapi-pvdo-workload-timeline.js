@@ -308,7 +308,8 @@ module.exports = function (RED) {
             "eventId": "updatedText",
             "dataObject": outputJSON
           }
-          console.log(JSON.stringify(data))
+          //console.log(JSON.stringify(data))
+
           var additionalScript = `
             $.ajax({
               type: "POST",
