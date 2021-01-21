@@ -156,7 +156,6 @@ module.exports = function (RED) {
           outputJSON.stations.push(stationJSON);
         }
         var outputJSONStr = JSON.stringify(outputJSON);
-        console.log(outputJSON)
 
         var payload = JSON.stringify(arrayToHtml);
         //google charts
@@ -309,6 +308,7 @@ module.exports = function (RED) {
             "eventId": "updatedText",
             "dataObject": outputJSON
           }
+          console.log(JSON.stringify(data))
           var additionalScript = `
             $.ajax({
               type: "POST",
