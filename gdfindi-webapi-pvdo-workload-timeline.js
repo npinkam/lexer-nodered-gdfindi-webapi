@@ -131,7 +131,7 @@ module.exports = function (RED) {
           };
           var endTime = [];
           for (var j = 0; j < arrayHeader.length; j++) {
-            let startTime = setTodaySecond(parseInt(cumTimeline[j]) - parseInt(timeline[j]));
+            let startTime = parseInt(cumTimeline[j]) - parseInt(timeline[j]);
             let array = [station, '', tooltipStr(arrayHeader[j], timeline[j]), startTime, parseInt(cumTimeline[j])]
             //console.log(array);
             arrayToHtml.push(array);
@@ -144,7 +144,7 @@ module.exports = function (RED) {
               "ProductionProcessName": str[2],
               "ProcessIndex": parseInt(str[3]),
               "Count": parseInt(str[4]),
-              "StartTime": startTime,
+              "StartTime": setTodaySecond(startTime),
               "Duration": parseInt(timeline[j])
             });
           }
