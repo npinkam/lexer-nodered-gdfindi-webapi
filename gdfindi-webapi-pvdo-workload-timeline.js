@@ -127,8 +127,7 @@ module.exports = function (RED) {
                 today.getDate()
             )
               .setSeconds(inputSec)
-              .toISOString()
-            return todayDate;
+            return new Date(todayDate).toISOString();
           };
           var endTime = [];
           for (var j = 0; j < arrayHeader.length; j++) {
