@@ -117,9 +117,22 @@ module.exports = function (RED) {
           //console.log(arrayHeader)
           //console.log(timeline)
           //console.log(cumTimeline)
+          const setTodaySecond = function (inputSec) {
+            const today = new Date();
+            const todayDate = new Date(
+              today.getFullYear() +
+                "-" +
+                (today.getMonth() + 1) +
+                "-" +
+                today.getDate()
+            )
+              .setSeconds(inputSec)
+              .toISOString()
+            return todayDate;
+          };
           var endTime = [];
           for (var j = 0; j < arrayHeader.length; j++) {
-            let startTime = parseInt(cumTimeline[j]) - parseInt(timeline[j]);
+            let startTime = setTodaySecond(parseInt(cumTimeline[j]) - parseInt(timeline[j]));
             let array = [station, '', tooltipStr(arrayHeader[j], timeline[j]), startTime, parseInt(cumTimeline[j])]
             //console.log(array);
             arrayToHtml.push(array);
@@ -144,6 +157,7 @@ module.exports = function (RED) {
           outputJSON.stations.push(stationJSON);
         }
         var outputJSONStr = JSON.stringify(outputJSON);
+        console.log(outputJSON)
 
         var payload = JSON.stringify(arrayToHtml);
         //google charts
@@ -292,9 +306,8 @@ module.exports = function (RED) {
         }
           `;
           var data = {
-            "eventId": "updatedText",
-            "priority": "0",
             "uuid": "e27275a4-bf01-488e-a878-22e279173113",
+            "eventId": "updatedText",
             "dataObject": outputJSON
           }
           var additionalScript = `
