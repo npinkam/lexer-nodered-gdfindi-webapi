@@ -18,11 +18,16 @@ module.exports = function (RED) {
       /** mandatory **/
       var msgid = RED.util.generateId();
       res._msgid = msgid;
-      var msg = { _msgid: msgid, req: req, res: wrapper.createResponseWrapper(node, res), payload: {} };
+      var msg = {
+        _msgid: msgid,
+        req: req,
+        res: wrapper.createResponseWrapper(node, res),
+        payload: {},
+      };
       /** mandatory **/
       var payload2 = JSON.stringify(arrayToHtml);
 
-      var htmlText =`
+      var htmlText = `
       <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -142,10 +147,10 @@ body {
 </body>
 </html>                                		
 
-      `
-        msg.payload=htmlText;
-        httpOut(RED, node, msg, done);
-    }
+      `;
+      msg.payload = htmlText;
+      httpOut(RED, node, msg, done);
+    };
     httpIn(RED, node, this.url, this.method, this.callback);
     // add codeBeforeReceivePayload
     node.on("input", function (msg, done) {
@@ -213,6 +218,19 @@ body {
         //workLoadChart
         var result =
           response.results[0].statisticalResult.workLoadChartOfStation;
+        const setTodaySecond = function (inputSec) {
+          const today = new Date();
+          const todayDate = new Date(
+            today.getFullYear() +
+              "-" +
+              (today.getMonth() + 1) +
+              "-" +
+              today.getDate()
+          )
+            .setSeconds(inputSec)
+            .toString();
+          return parseInt(todayDate);
+        };
         //JSON
         var outputJSON = {};
         outputJSON.stations = [];
@@ -297,7 +315,7 @@ body {
           //console.log(timeline)
           //console.log(cumTimeline)
           var endTime = [];
-                  //send data to the next node
+          //send data to the next node
 
           for (var j = 0; j < arrayHeader.length; j++) {
             let startTime = parseInt(cumTimeline[j]) - parseInt(timeline[j]);
@@ -308,9 +326,16 @@ body {
               startTime,
               parseInt(cumTimeline[j]),
             ];
+            let arraySubmit = [
+              station,
+              "",
+              tooltipStr(arrayHeader[j], timeline[j]),
+              setTodaySecond(startTime),
+              setTodaySecond(parseInt(cumTimeline[j])),
+            ];
             //console.log(array);
             arrayToHtml.push(array);
-            submitData.push(array);
+            submitData.push(arraySubmit);
             //JSON
             var str = taskSplit(arrayHeader[j]);
             workArray.push({
@@ -333,7 +358,7 @@ body {
         var outputJSONStr = JSON.stringify(outputJSON);
 
         payload = JSON.stringify(arrayToHtml);
-        console.log(payload)
+
         //google charts
         if (totalRow > 6) var chartHeightWithLimit = 240;
         else var chartHeightWithLimit = totalRow * 35;
@@ -530,8 +555,7 @@ body {
         }
         httpOut(RED, node, msg, done);
         msg.payload = "";
-        submitData = JSON.stringify(submitData);
-        msg.payload = submitData;
+        msg.payload = JSON.stringify(submitData);
         node.send(msg);
       }
     });
