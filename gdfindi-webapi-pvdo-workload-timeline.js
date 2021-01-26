@@ -306,7 +306,7 @@ module.exports = function (RED) {
           var data = {
             "uuid": "e27275a4-bf01-488e-a878-22e279173113",
             "eventId": "updatedText",
-            "token": "73113",
+//            "token": "73113",
             "dataObject": outputJSON
           }
           //console.log(JSON.stringify(data))
