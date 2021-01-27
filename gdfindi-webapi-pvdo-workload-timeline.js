@@ -321,10 +321,7 @@ module.exports = function (RED) {
             $.ajax({
               method: "POST",
               url: "http://10.3.4.30:8083/rest/data",
-              headers: {'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-              'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
-              'Accept': 'application/json',
+              headers: {'X-Application-Context': 'vfk.msb.interface.rest:8086',
             'Content-Type': 'application/json'},
               data: ${dataText},
               success: (result)=>{
