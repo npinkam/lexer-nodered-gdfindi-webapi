@@ -316,17 +316,7 @@ module.exports = function (RED) {
               method: "POST",
               url: "http://10.3.4.30:8083/rest/data",
               contentType: 'application/json',
-              data: ${JSON.stringify(data)},
-              success: (result)=>{
-                if (result.error == "true") 
-                {
-                    alert("An error occurred: " & result.errorMessage);
-                }
-                else 
-                {
-                    alert("Successfully transfer JSON to the server!")
-                }
-              },
+              data: '${JSON.stringify(data)}',
               dataType: "json"
             });
             $("#submission_state").text("Successfully transfer JSON to the server!\\nRestart the process in 5 seconds...")
