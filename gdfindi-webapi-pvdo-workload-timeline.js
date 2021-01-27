@@ -309,6 +309,7 @@ module.exports = function (RED) {
 //            "token": "73113",
             "dataObject": outputJSON
           }
+          var dataText = JSON.stringify(data);
           //console.log(JSON.stringify(data))
 
           var additionalScript = `
@@ -316,7 +317,7 @@ module.exports = function (RED) {
               method: "POST",
               url: "http://10.3.4.30:8083/rest/data",
               contentType: 'application/json',
-              data: '${JSON.stringify(data)}',
+              data: ${dataText},
               dataType: "json"
             });
             $("#submission_state").text("Successfully transfer JSON to the server!\\nRestart the process in 5 seconds...")
