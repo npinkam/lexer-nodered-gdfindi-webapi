@@ -315,7 +315,7 @@ module.exports = function (RED) {
             $.ajax({
               method: "POST",
               url: "http://10.3.4.30:8083/rest/data",
-              headers: {'Content-Type': 'application/json; charset=utf-8'},
+              contentType: 'application/json',
               data: ${JSON.stringify(data)},
               success: (result)=>{
                 if (result.error == "true") 
