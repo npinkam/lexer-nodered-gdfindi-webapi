@@ -337,9 +337,6 @@ module.exports = function (RED) {
               dataType: "json"
             });
             $("#submission_state").text("Successfully transfer JSON to the server!\\nRestart the process in 5 seconds...")
-            setTimeout(()=>{
-              window.location='/projectlist'
-            }, 5000);
           `;
           script = script + additionalScript;
           msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 5);
