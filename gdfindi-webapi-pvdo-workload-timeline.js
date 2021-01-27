@@ -313,9 +313,9 @@ module.exports = function (RED) {
 
           var additionalScript = `
             $.ajax({
-              type: "POST",
+              method: "POST",
               url: "http://10.3.4.30:8083/rest/data",
-              headers: {'Content-Type': 'application/json'},
+              headers: {'Content-Type': 'application/json; charset=utf-8'},
               data: ${JSON.stringify(data)},
               success: (result)=>{
                 if (result.error == "true") 
