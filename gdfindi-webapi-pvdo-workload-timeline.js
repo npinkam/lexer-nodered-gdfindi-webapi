@@ -321,7 +321,10 @@ module.exports = function (RED) {
             $.ajax({
               method: "POST",
               url: "http://10.3.4.30:8083/rest/data",
-              headers: {'Accept': 'application/json',
+              headers: {'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+              'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+              'Accept': 'application/json',
             'Content-Type': 'application/json'},
               data: ${dataText},
               success: (result)=>{
@@ -337,6 +340,9 @@ module.exports = function (RED) {
               dataType: "json"
             });
             $("#submission_state").text("Successfully transfer JSON to the server!\\nRestart the process in 5 seconds...")
+            setTimeout(()=>{
+              window.location='/projectlist'
+            }, 5000);
           `;
           script = script + additionalScript;
           msg.payload = utility.htmlVFKTemplate(title, library, style, header, body, script, 5);
