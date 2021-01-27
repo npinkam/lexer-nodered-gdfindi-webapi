@@ -316,7 +316,8 @@ module.exports = function (RED) {
             $.ajax({
               method: "POST",
               url: "http://10.3.4.30:8083/rest/data",
-              contentType: 'application/json',
+              headers: {'Accept': 'application/json',
+            'Content-Type': 'application/json'},
               data: ${dataText},
               dataType: "json"
             });
