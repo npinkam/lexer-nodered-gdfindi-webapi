@@ -314,7 +314,7 @@ module.exports = function (RED) {
 
           let xhr = new XMLHttpRequest();
           xhr.open("POST", 'http://10.3.4.30:8083/rest/data', false);
-          xhr.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
+          xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
           xhr.send(dataText);
 
           var additionalScript = `
