@@ -312,6 +312,18 @@ module.exports = function (RED) {
           var dataText = JSON.stringify(data);
           //console.log(JSON.stringify(data))
 
+          let xhr = new XMLHttpRequest();
+          xhr.open("POST", 'http://10.3.4.30:8083/rest/data', true);
+          xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+          xhr.onreadystatechange = function (res) {
+             if (this.readyState == 4 && this.status == 200) {
+              var response = this.responseText;
+              console.log(response)
+            }
+            //console.log('readystate: '+ this.readyState+'\n status: '+this.status+'\n'+this.responseText+'\n ----------------------')
+          };
+          xhr.send(dataText);
+
           var additionalScript = `
             $.ajax({
               method: "POST",
@@ -319,6 +331,16 @@ module.exports = function (RED) {
               headers: {'Accept': 'application/json',
             'Content-Type': 'application/json'},
               data: ${dataText},
+              success: (result)=>{
+                if (result.error == "true") 
+                {
+                    alert("An error occurred: " & result.errorMessage);
+                }
+                else 
+                {
+                    alert("Successfully transfer JSON to the server!")
+                }
+              },
               dataType: "json"
             });
             $("#submission_state").text("Successfully transfer JSON to the server!\\nRestart the process in 5 seconds...")
