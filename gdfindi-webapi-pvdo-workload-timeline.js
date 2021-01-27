@@ -315,7 +315,7 @@ module.exports = function (RED) {
           var additionalScript = `
             $.ajax({
               method: "POST",
-              url: "http://10.3.4.30:8083/rest/data",
+              url: "10.3.4.30:8083/rest/data",
               contentType: 'application/json',
               data: ${dataText},
               dataType: "json"
