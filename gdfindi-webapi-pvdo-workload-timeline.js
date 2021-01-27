@@ -321,7 +321,8 @@ module.exports = function (RED) {
             $.ajax({
               method: "POST",
               url: "http://10.3.4.30:8083/rest/data",
-              headers: {'x-requested-with': 'xmlhttprequest'},
+              headers: {'x-requested-with': 'xmlhttprequest',
+            'Content-Type': 'application/json'},
               data: ${dataText},
               success: (result)=>{
                 if (result.error == "true") 
