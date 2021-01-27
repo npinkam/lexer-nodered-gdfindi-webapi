@@ -312,28 +312,12 @@ module.exports = function (RED) {
           var dataText = JSON.stringify(data);
           //console.log(JSON.stringify(data))
 
-          /* let xhr = new XMLHttpRequest();
+          let xhr = new XMLHttpRequest();
           xhr.open("POST", 'http://10.3.4.30:8083/rest/data', false);
           xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-          xhr.send(dataText); */
+          xhr.send(dataText);
 
           var additionalScript = `
-            $.ajax({
-              method: "POST",
-              url: "http://10.3.4.30:8083/rest/data",
-              data: ${dataText},
-              success: (result)=>{
-                if (result.error == "true") 
-                {
-                    alert("An error occurred: " & result.errorMessage);
-                }
-                else 
-                {
-                    alert("Successfully transfer JSON to the server!")
-                }
-              },
-              dataType: "json"
-            });
             $("#submission_state").text("Successfully transfer JSON to the server!\\nRestart the process in 5 seconds...")
             setTimeout(()=>{
               window.location='/projectlist'
